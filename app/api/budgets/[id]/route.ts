@@ -1,19 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 // 🔹 Récupérer un budget par ID
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const { id } = context.params;
 
     const budget = await prisma.budget.findUnique({
       where: { id },
-      include: {
-        category: true,
-      },
+      include: { category: true },
     });
 
     if (!budget) {
@@ -29,23 +27,19 @@ export async function GET(
 
 // 🔹 Mettre à jour un budget existant
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const { id } = context.params;
     const data = await request.json();
 
-    // Vérifier que le budget existe
-    const existingBudget = await prisma.budget.findUnique({
-      where: { id },
-    });
+    const existingBudget = await prisma.budget.findUnique({ where: { id } });
 
     if (!existingBudget) {
       return NextResponse.json({ error: "Budget non trouvé" }, { status: 404 });
     }
 
-    // Mise à jour
     const updatedBudget = await prisma.budget.update({
       where: { id },
       data,
@@ -63,23 +57,19 @@ export async function PUT(
 
 // 🔹 Supprimer un budget
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const { id } = context.params;
 
-    const existingBudget = await prisma.budget.findUnique({
-      where: { id },
-    });
+    const existingBudget = await prisma.budget.findUnique({ where: { id } });
 
     if (!existingBudget) {
       return NextResponse.json({ error: "Budget non trouvé" }, { status: 404 });
     }
 
-    await prisma.budget.delete({
-      where: { id },
-    });
+    await prisma.budget.delete({ where: { id } });
 
     return NextResponse.json({ message: "Budget supprimé avec succès" });
   } catch (error) {
