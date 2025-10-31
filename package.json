@@ -17,16 +17,24 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^6.18.0",
+    "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
+    "jose": "^6.1.0",
+    "jspdf": "^3.0.3",
+    "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.548.0",
     "next": "^16.0.1",
+    "prisma": "^6.18.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "recharts": "^3.3.0",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.16",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^24.9.2",
     "@types/react": "^19.2.2",
     "autoprefixer": "^10.4.21",

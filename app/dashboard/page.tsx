@@ -11,6 +11,7 @@ import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, Calenda
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { ExportButton } from '@/components/ExportDialog';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -118,12 +119,20 @@ export default function DashboardPage() {
                 Vue d'ensemble de vos finances
               </p>
             </div>
-            <Link href="/transactions">
-              <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md">
-                <Plus className="h-4 w-4 mr-2" />
-                Nouvelle transaction
-              </Button>
-            </Link>
+            <div className="flex flex-col xs:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+              <ExportButton
+                transactions={transactions}
+                categories={categories}
+                variant="outline"
+                className="w-full xs:w-auto"
+              />
+              <Link href="/transactions" className="w-full xs:w-auto">
+                <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md w-full">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nouvelle transaction
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Cartes de statistiques principales */}

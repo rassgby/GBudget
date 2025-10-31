@@ -33,6 +33,7 @@ import {
   X,
   ChevronDown,
 } from "lucide-react";
+import { ExportButton } from "@/components/ExportDialog";
 
 export default function TransactionsPage() {
   const { user } = useAuth();
@@ -177,14 +178,23 @@ export default function TransactionsPage() {
                 Gérez toutes vos transactions
               </p>
             </div>
-            <Button
-              onClick={() => setShowModal(true)}
-              className="w-full xs:w-auto shrink-0 flex items-center justify-center gap-2 h-9 sm:h-10 text-sm sm:text-base px-3 sm:px-4"
-            >
-              <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              <span className="hidden xs:inline">Nouvelle transaction</span>
-              <span className="xs:hidden">Ajouter</span>
-            </Button>
+            <div className="flex gap-2 w-full xs:w-auto">
+              <ExportButton
+                transactions={transactions}
+                categories={categories}
+                variant="outline"
+                size="default"
+                className="flex-1 xs:flex-none h-9 sm:h-10 text-sm sm:text-base"
+              />
+              <Button
+                onClick={() => setShowModal(true)}
+                className="flex-1 xs:flex-none shrink-0 flex items-center justify-center gap-2 h-9 sm:h-10 text-sm sm:text-base px-3 sm:px-4"
+              >
+                <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Nouvelle transaction</span>
+                <span className="xs:hidden">Ajouter</span>
+              </Button>
+            </div>
           </div>
 
           {/* Barre de recherche et filtres mobile */}
