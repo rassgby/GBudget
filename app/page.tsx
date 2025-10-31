@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Wallet, TrendingUp, PieChart, Lock, Smartphone, BarChart3, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Wallet, TrendingUp, PieChart, Lock, Smartphone, BarChart3, ArrowRight, CheckCircle2, Download, Monitor, Tablet } from 'lucide-react';
+import InstallButton from '@/components/InstallButton';
 
 export default function Home() {
   const { user } = useAuth();
@@ -164,6 +165,175 @@ export default function Home() {
         </div>
       </section>
 
+      {/* PWA Download Section */}
+      <section className="py-20 md:py-28 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 relative overflow-hidden">
+        <div className="absolute inset-0 bg-white/30 backdrop-blur-3xl"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            {/* En-tête */}
+            <div className="text-center mb-12 md:mb-16">
+              <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+                <Download className="h-4 w-4" />
+                Application Progressive (PWA)
+              </div>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+                Téléchargez Baraaka sur votre appareil
+              </h2>
+              <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Installez Baraaka comme une application native sur votre téléphone, tablette ou ordinateur.
+                Aucun store requis, installation en 1 clic !
+              </p>
+            </div>
+
+            {/* Grille principale */}
+            <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center mb-12">
+              {/* Côté gauche - Avantages */}
+              <div className="space-y-6">
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+                  Pourquoi installer l'application ?
+                </h3>
+
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-blue-100 p-3 rounded-lg shrink-0">
+                      <Smartphone className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 mb-1">Accès instantané</h4>
+                      <p className="text-gray-600 text-sm">
+                        Lancez l'application directement depuis votre écran d'accueil, sans ouvrir le navigateur
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-green-100 p-3 rounded-lg shrink-0">
+                      <CheckCircle2 className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 mb-1">Mode hors ligne</h4>
+                      <p className="text-gray-600 text-sm">
+                        Consultez vos données même sans connexion Internet
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-purple-100 p-3 rounded-lg shrink-0">
+                      <Monitor className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 mb-1">Expérience native</h4>
+                      <p className="text-gray-600 text-sm">
+                        Interface plein écran sans barre d'adresse, comme une vraie application
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-yellow-100 p-3 rounded-lg shrink-0">
+                      <Tablet className="h-6 w-6 text-yellow-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 mb-1">Multi-appareils</h4>
+                      <p className="text-gray-600 text-sm">
+                        Installez sur tous vos appareils : smartphone, tablette, ordinateur
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Côté droit - Installation */}
+              <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 border-2 border-blue-100">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-green-600 rounded-2xl mb-4 shadow-lg">
+                    <Wallet className="h-10 w-10 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    Installer Baraaka
+                  </h3>
+                  <p className="text-gray-600">
+                    Gratuit • Sans publicité • Installation rapide
+                  </p>
+                </div>
+
+                {/* Bouton d'installation */}
+                <div className="flex flex-col items-center gap-4 mb-6">
+                  <InstallButton />
+                </div>
+
+                <div className="border-t border-gray-200 pt-6">
+                  <h4 className="font-bold text-gray-900 mb-4 text-center">
+                    Compatible avec :
+                  </h4>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>Android (Chrome)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>iPhone/iPad (Safari)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>Windows (Edge/Chrome)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>Mac (Safari/Chrome)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                  <p className="text-xs text-gray-600 text-center">
+                    💡 <strong>Astuce :</strong> Après installation, retrouvez Baraaka sur votre écran d'accueil comme n'importe quelle autre application
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Étapes d'installation */}
+            <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border-2 border-purple-100">
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-6 text-center">
+                Comment installer en 3 étapes simples
+              </h3>
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full text-2xl font-bold text-blue-600 mb-4">
+                    1
+                  </div>
+                  <h4 className="font-bold text-gray-900 mb-2">Cliquez sur "Télécharger"</h4>
+                  <p className="text-sm text-gray-600">
+                    Sur Android/Desktop : Le bouton vert ci-dessus
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full text-2xl font-bold text-green-600 mb-4">
+                    2
+                  </div>
+                  <h4 className="font-bold text-gray-900 mb-2">Confirmez l'installation</h4>
+                  <p className="text-sm text-gray-600">
+                    Acceptez d'ajouter Baraaka à votre appareil
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full text-2xl font-bold text-purple-600 mb-4">
+                    3
+                  </div>
+                  <h4 className="font-bold text-gray-900 mb-2">C'est terminé !</h4>
+                  <p className="text-sm text-gray-600">
+                    L'icône Baraaka apparaît sur votre écran d'accueil
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Stats Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -221,16 +391,16 @@ export default function Home() {
                 <div className="bg-blue-600 p-2 rounded-lg">
                   <Wallet className="h-6 w-6 text-white" />
                 </div>
-                <span className="text-2xl font-bold text-white">GBudget</span>
+                <span className="text-2xl font-bold text-white">Baraaka</span>
               </div>
               <p className="text-gray-400 max-w-md">
-                Votre solution complète pour une gestion budgétaire intelligente et sans effort
+                Votre solution complète pour une gestion budgétaire intelligente et sans effort en FCFA
               </p>
             </div>
-            
+
             <div className="border-t border-gray-800 pt-8 text-center">
               <p className="text-sm text-gray-500">
-                &copy; 2025 GBudget. Tous droits réservés. Application de gestion de budget personnel.
+                &copy; 2025 Baraaka. Tous droits réservés. Application de gestion de budget personnel.
               </p>
             </div>
           </div>
