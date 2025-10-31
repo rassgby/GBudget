@@ -111,9 +111,9 @@ export function exportToPDF(
   const balance = totalIncome - totalExpenses;
 
   doc.setFontSize(11);
-  doc.setFont(undefined, 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.text('Résumé:', 14, yPos);
-  doc.setFont(undefined, 'normal');
+  doc.setFont('helvetica', 'normal');
   yPos += 6;
   doc.text(`Total Revenus: ${formatCurrency(totalIncome)}`, 14, yPos);
   yPos += 6;

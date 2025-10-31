@@ -15,6 +15,8 @@ const withPWA = require('@ducanh2912/next-pwa').default({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Configuration Turbopack vide pour accepter Turbopack en Next.js 16
+  turbopack: {},
 };
 
 module.exports = withPWA(nextConfig);

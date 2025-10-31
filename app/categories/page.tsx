@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { categoriesAPI, transactionsAPI } from '@/lib/api';
-import { Category } from '@/types';
+import { Category, Transaction } from '@/types';
 import { Plus, Pencil, Trash2, Tag } from 'lucide-react';
 
 const PRESET_COLORS = [
@@ -29,6 +29,7 @@ const PRESET_COLORS = [
 export default function CategoriesPage() {
   const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [formData, setFormData] = useState({
@@ -39,6 +40,7 @@ export default function CategoriesPage() {
   useEffect(() => {
     if (user) {
       loadCategories();
+      loadTransactions();
     }
   }, [user]);
 
@@ -50,6 +52,16 @@ export default function CategoriesPage() {
     } catch (error) {
       console.error('Erreur lors du chargement des catégories:', error);
       alert('Erreur lors du chargement des catégories');
+    }
+  };
+
+  const loadTransactions = async () => {
+    if (!user) return;
+    try {
+      const data = await transactionsAPI.getAll();
+      setTransactions(data.transactions || []);
+    } catch (error) {
+      console.error('Erreur lors du chargement des transactions:', error);
     }
   };
 
@@ -106,7 +118,7 @@ export default function CategoriesPage() {
       // Vérifier si la catégorie est utilisée dans des transactions
       const transactionsData = await transactionsAPI.getAll();
       const transactions = transactionsData.transactions || [];
-      const isUsed = transactions.some(t => t.category === category.name);
+      const isUsed = transactions.some((t: Transaction) => t.category === category.name);
 
       if (isUsed) {
         if (!confirm('Cette catégorie est utilisée dans des transactions. Êtes-vous sûr de vouloir la supprimer ?')) {
@@ -137,9 +149,7 @@ export default function CategoriesPage() {
 
   // Compter les transactions par catégorie
   const getCategoryUsageCount = (categoryName: string): number => {
-    if (!user) return 0;
-    const transactions = getTransactions(user.id);
-    return transactions.filter(t => t.category === categoryName).length;
+    return transactions.filter((t: Transaction) => t.category === categoryName).length;
   };
 
   return (
