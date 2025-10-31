@@ -70,7 +70,7 @@ export function exportToPDF(
 
   // En-tête du document
   doc.setFontSize(20);
-  doc.text('GBudget - Export des Transactions', 14, 22);
+  doc.text('Baraaka - Export des Transactions', 14, 22);
 
   // Informations sur les filtres
   doc.setFontSize(10);

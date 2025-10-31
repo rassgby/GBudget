@@ -4,8 +4,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 
 export const metadata: Metadata = {
-  title: "GBudget - Gestion de Budget Personnel",
-  description: "Application de gestion de budget personnel avec suivi des dépenses et revenus",
+  title: "Baraaka - Gestion de Budget Personnel",
+  description: "Application de gestion de budget personnel avec suivi des dépenses et revenus en FCFA",
 };
 
 export default function RootLayout({

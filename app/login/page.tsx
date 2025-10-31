@@ -61,7 +61,7 @@ export default function LoginPage() {
           </div>
           <CardTitle className="text-2xl text-center">Connexion</CardTitle>
           <CardDescription className="text-center">
-            Connectez-vous à votre compte GBudget
+            Connectez-vous à votre compte Baraaka
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>

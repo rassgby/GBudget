@@ -1,4 +1,4 @@
-# GBudget - Application de Gestion de Budget Personnel
+# Baraaka - Application de Gestion de Budget Personnel
 
 Application Next.js complète pour gérer vos finances personnelles avec suivi des dépenses, revenus et statistiques.
 
@@ -39,7 +39,7 @@ Application Next.js complète pour gérer vos finances personnelles avec suivi d
 1. Cloner le projet :
 ```bash
 git clone <votre-repo>
-cd GBudget
+cd Baraaka
 ```
 
 2. Installer les dépendances :
@@ -63,7 +63,7 @@ npm run dev
 ## Structure du projet
 
 ```
-GBudget/
+Baraaka/
 ├── app/                    # Pages Next.js (App Router)
 │   ├── page.tsx           # Landing page
 │   ├── login/             # Page de connexion

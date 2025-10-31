@@ -1,7 +1,7 @@
 {
-  "name": "gbudget",
+  "name": "baraaka",
   "version": "1.0.0",
-  "description": "",
+  "description": "Application de gestion budgétaire Baraaka",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",

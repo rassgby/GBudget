@@ -290,7 +290,7 @@ npm run dev
 
 ## 🎉 C'est prêt !
 
-L'application GBudget est maintenant équipée de :
+L'application Baraaka est maintenant équipée de :
 - ✅ Export PDF/Excel avec filtres avancés
 - ✅ Base de données persistante et sécurisée
 - ✅ API REST complète

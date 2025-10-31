@@ -185,7 +185,7 @@ export function ExportDialog({
           {/* Filtres de montant */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="minAmount">Montant minimum (€)</Label>
+              <Label htmlFor="minAmount">Montant minimum (FCFA)</Label>
               <Input
                 id="minAmount"
                 type="number"
@@ -202,7 +202,7 @@ export function ExportDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="maxAmount">Montant maximum (€)</Label>
+              <Label htmlFor="maxAmount">Montant maximum (FCFA)</Label>
               <Input
                 id="maxAmount"
                 type="number"

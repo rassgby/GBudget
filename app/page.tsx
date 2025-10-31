@@ -38,7 +38,7 @@ export default function Home() {
               Prenez le contrôle de vos finances
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl mb-10 text-blue-50 max-w-3xl mx-auto leading-relaxed">
-              GBudget vous aide à suivre vos dépenses, gérer votre budget et atteindre vos objectifs financiers en toute simplicité
+              Baraaka vous aide à suivre vos dépenses, gérer votre budget et atteindre vos objectifs financiers en toute simplicité
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Link href="/register">
@@ -173,7 +173,7 @@ export default function Home() {
               <div className="text-gray-600 font-medium">Gratuit</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-green-600 mb-2">0€</div>
+              <div className="text-4xl md:text-5xl font-bold text-green-600 mb-2">0 FCFA</div>
               <div className="text-gray-600 font-medium">Frais cachés</div>
             </div>
             <div className="text-center">

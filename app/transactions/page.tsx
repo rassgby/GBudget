@@ -448,7 +448,7 @@ export default function TransactionsPage() {
                     {/* Montant */}
                     <div className="space-y-2">
                       <Label htmlFor="amount" className="text-xs xs:text-sm sm:text-base font-medium">
-                        Montant (€) <span className="text-red-500">*</span>
+                        Montant (FCFA) <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="amount"

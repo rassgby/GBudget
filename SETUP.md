@@ -1,6 +1,6 @@
-# Guide de configuration - GBudget
+# Guide de configuration - Baraaka
 
-Ce guide vous aidera à configurer GBudget avec MongoDB et les fonctionnalités d'export.
+Ce guide vous aidera à configurer Baraaka avec MongoDB et les fonctionnalités d'export.
 
 ## 🚀 Installation
 
@@ -65,7 +65,7 @@ Modifiez le fichier `.env` selon votre configuration :
 **Pour MongoDB Local** :
 ```env
 # Database MongoDB Local
-DATABASE_URL="mongodb://localhost:27017/gbudget"
+DATABASE_URL="mongodb://localhost:27017/baraaka"
 
 # NextAuth
 NEXTAUTH_URL="http://localhost:3000"
@@ -75,7 +75,7 @@ NEXTAUTH_SECRET="votre-secret-unique-ici"
 **Pour MongoDB Atlas** :
 ```env
 # Database MongoDB Atlas
-DATABASE_URL="mongodb+srv://username:password@cluster.mongodb.net/gbudget?retryWrites=true&w=majority"
+DATABASE_URL="mongodb+srv://username:password@cluster.mongodb.net/baraaka?retryWrites=true&w=majority"
 
 # NextAuth
 NEXTAUTH_URL="http://localhost:3000"
@@ -206,7 +206,7 @@ npx prisma db push --force-reset
 
 # Visualiser les données avec MongoDB Shell
 mongosh
-use gbudget
+use baraaka
 db.users.find()
 db.transactions.find()
 db.categories.find()
@@ -313,7 +313,7 @@ PORT=3001 npm run dev
 **Local** :
 ```bash
 mongosh
-use gbudget
+use baraaka
 db.dropDatabase()
 npx prisma db push
 ```
