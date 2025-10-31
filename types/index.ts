@@ -25,6 +25,18 @@ export interface Transaction {
   createdAt: string;
 }
 
+export interface Budget {
+  id: string;
+  userId: string;
+  amount: number;
+  month: number;
+  year: number;
+  categoryId?: string | null;
+  category?: Category;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;

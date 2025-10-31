@@ -73,3 +73,45 @@ export const categoriesAPI = {
       method: 'DELETE',
     }),
 };
+
+// Budgets API
+export const budgetsAPI = {
+  getAll: (params?: { month?: number; year?: number; categoryId?: string | null }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.month) searchParams.append('month', params.month.toString());
+    if (params?.year) searchParams.append('year', params.year.toString());
+    if (params?.categoryId !== undefined) {
+      if (params.categoryId === null) {
+        searchParams.append('categoryId', '');
+      } else {
+        searchParams.append('categoryId', params.categoryId);
+      }
+    }
+    const queryString = searchParams.toString();
+    return fetchAPI(`/api/budgets${queryString ? `?${queryString}` : ''}`);
+  },
+
+  create: (budget: {
+    amount: number;
+    month: number;
+    year: number;
+    categoryId?: string | null;
+  }) => fetchAPI('/api/budgets', {
+    method: 'POST',
+    body: JSON.stringify(budget),
+  }),
+
+  update: (id: string, budget: {
+    amount?: number;
+    month?: number;
+    year?: number;
+    categoryId?: string | null;
+  }) => fetchAPI(`/api/budgets/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(budget),
+  }),
+
+  delete: (id: string) => fetchAPI(`/api/budgets/${id}`, {
+    method: 'DELETE',
+  }),
+};

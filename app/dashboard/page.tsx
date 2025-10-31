@@ -4,19 +4,21 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthGuard from '@/components/AuthGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { transactionsAPI, categoriesAPI } from '@/lib/api';
+import { transactionsAPI, categoriesAPI, budgetsAPI } from '@/lib/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { Transaction, Category } from '@/types';
+import { Transaction, Category, Budget } from '@/types';
 import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, Calendar, Activity, Plus } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ExportButton } from '@/components/ExportDialog';
+import { BudgetCard } from '@/components/BudgetCard';
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [budget, setBudget] = useState<Budget | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -26,12 +28,24 @@ export default function DashboardPage() {
 
   const loadData = async () => {
     try {
-      const [transactionsData, categoriesData] = await Promise.all([
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth() + 1;
+      const currentYear = currentDate.getFullYear();
+
+      const [transactionsData, categoriesData, budgetsData] = await Promise.all([
         transactionsAPI.getAll(),
         categoriesAPI.getAll(),
+        budgetsAPI.getAll({ month: currentMonth, year: currentYear, categoryId: null }),
       ]);
+
       setTransactions(transactionsData.transactions || []);
       setCategories(categoriesData.categories || []);
+
+      // Récupérer le budget global du mois actuel (categoryId null)
+      const currentBudget = budgetsData.budgets?.find(
+        (b: Budget) => b.month === currentMonth && b.year === currentYear && !b.categoryId
+      );
+      setBudget(currentBudget || null);
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error);
     }
@@ -47,6 +61,20 @@ export default function DashboardPage() {
     .reduce((sum, t) => sum + t.amount, 0);
 
   const balance = totalIncome - totalExpenses;
+
+  // Dépenses du mois actuel (pour le budget)
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+
+  const currentMonthExpenses = transactions
+    .filter(t => {
+      const tDate = new Date(t.date);
+      return t.type === 'expense' &&
+             tDate.getMonth() === currentMonth &&
+             tDate.getFullYear() === currentYear;
+    })
+    .reduce((sum, t) => sum + t.amount, 0);
 
   // Taux d'épargne
   const savingsRate = totalIncome > 0 ? ((balance / totalIncome) * 100).toFixed(1) : '0';
@@ -206,6 +234,15 @@ export default function DashboardPage() {
                 <p className="text-xs text-gray-500 mt-1 sm:mt-2">Taux d'épargne</p>
               </CardContent>
             </Card>
+          </div>
+
+          {/* Budget mensuel */}
+          <div className="mb-4 sm:mb-6 md:mb-8">
+            <BudgetCard
+              budget={budget}
+              currentMonthExpenses={currentMonthExpenses}
+              onBudgetUpdated={loadData}
+            />
           </div>
 
           {/* Top catégories */}
