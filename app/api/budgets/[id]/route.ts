@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
 
-// 🔹 Récupérer un budget par ID
+const prisma = new PrismaClient();
+
+/**
+ * 🔹 GET — Récupérer un budget par ID
+ */
 export async function GET(
-  request: NextRequest,
+  req: NextRequest,
   context: { params: { id: string } }
 ) {
   try {
@@ -11,69 +15,68 @@ export async function GET(
 
     const budget = await prisma.budget.findUnique({
       where: { id },
-      include: { category: true },
     });
 
     if (!budget) {
       return NextResponse.json({ error: "Budget non trouvé" }, { status: 404 });
     }
 
-    return NextResponse.json({ budget });
+    return NextResponse.json(budget);
   } catch (error) {
-    console.error("Erreur lors de la récupération du budget:", error);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    console.error("Erreur GET budget:", error);
+    return NextResponse.json(
+      { error: "Erreur lors de la récupération du budget" },
+      { status: 500 }
+    );
   }
 }
 
-// 🔹 Mettre à jour un budget existant
-export async function PUT(
-  request: NextRequest,
+/**
+ * 🔹 PATCH — Mettre à jour un budget
+ */
+export async function PATCH(
+  req: NextRequest,
   context: { params: { id: string } }
 ) {
   try {
     const { id } = context.params;
-    const data = await request.json();
-
-    const existingBudget = await prisma.budget.findUnique({ where: { id } });
-
-    if (!existingBudget) {
-      return NextResponse.json({ error: "Budget non trouvé" }, { status: 404 });
-    }
+    const data = await req.json();
 
     const updatedBudget = await prisma.budget.update({
       where: { id },
       data,
     });
 
-    return NextResponse.json({
-      message: "Budget mis à jour avec succès",
-      budget: updatedBudget,
-    });
+    return NextResponse.json(updatedBudget);
   } catch (error) {
-    console.error("Erreur lors de la mise à jour du budget:", error);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    console.error("Erreur PATCH budget:", error);
+    return NextResponse.json(
+      { error: "Erreur lors de la mise à jour du budget" },
+      { status: 500 }
+    );
   }
 }
 
-// 🔹 Supprimer un budget
+/**
+ * 🔹 DELETE — Supprimer un budget
+ */
 export async function DELETE(
-  request: NextRequest,
+  req: NextRequest,
   context: { params: { id: string } }
 ) {
   try {
     const { id } = context.params;
 
-    const existingBudget = await prisma.budget.findUnique({ where: { id } });
-
-    if (!existingBudget) {
-      return NextResponse.json({ error: "Budget non trouvé" }, { status: 404 });
-    }
-
-    await prisma.budget.delete({ where: { id } });
+    await prisma.budget.delete({
+      where: { id },
+    });
 
     return NextResponse.json({ message: "Budget supprimé avec succès" });
   } catch (error) {
-    console.error("Erreur lors de la suppression du budget:", error);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    console.error("Erreur DELETE budget:", error);
+    return NextResponse.json(
+      { error: "Erreur lors de la suppression du budget" },
+      { status: 500 }
+    );
   }
 }
