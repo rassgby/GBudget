@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baraaka - Aperçu des Icônes PWA</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 2.5em;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    .icon-card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .icon-card:hover {
+      transform: translateY(-5px);
+    }
+    .icon-card img {
+      width: 100%;
+      max-width: 150px;
+      height: auto;
+      margin-bottom: 15px;
+      border-radius: 12px;
+    }
+    .icon-label {
+      font-weight: 600;
+      color: #2563eb;
+      font-size: 14px;
+    }
+    .icon-size {
+      color: #666;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    .svg-section {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      margin-top: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .svg-section h2 {
+      color: #2563eb;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .svg-display {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+    }
+    .svg-display img {
+      max-width: 300px;
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+    }
+    .info-box {
+      background: #f0f9ff;
+      border-left: 4px solid #2563eb;
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 8px;
+    }
+    .info-box h3 {
+      color: #2563eb;
+      margin-bottom: 10px;
+    }
+    .info-box p {
+      color: #334155;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 Baraaka - Icônes PWA</h1>
+
+    <div class="icon-grid">
+      <div class="icon-card">
+        <img src="/icon-72x72.png" alt="Icon 72x72">
+        <div class="icon-label">Icon 72x72</div>
+        <div class="icon-size">Android Small</div>
+      </div>
+
+      <div class="icon-card">
+        <img src="/icon-96x96.png" alt="Icon 96x96">
+        <div class="icon-label">Icon 96x96</div>
+        <div class="icon-size">Android Medium</div>
+      </div>
+
+      <div class="icon-card">
+        <img src="/icon-128x128.png" alt="Icon 128x128">
+        <div class="icon-label">Icon 128x128</div>
+        <div class="icon-size">Standard</div>
+      </div>
+
+      <div class="icon-card">
+        <img src="/icon-144x144.png" alt="Icon 144x144">
+        <div class="icon-label">Icon 144x144</div>
+        <div class="icon-size">Windows Tile</div>
+      </div>
+
+      <div class="icon-card">
+        <img src="/icon-152x152.png" alt="Icon 152x152">
+        <div class="icon-label">Icon 152x152</div>
+        <div class="icon-size">iPad</div>
+      </div>
+
+      <div class="icon-card">
+        <img src="/icon-180x180.png" alt="Icon 180x180">
+        <div class="icon-label">Icon 180x180</div>
+        <div class="icon-size">iPhone</div>
+      </div>
+
+      <div class="icon-card">
+        <img src="/icon-192x192.png" alt="Icon 192x192">
+        <div class="icon-label">Icon 192x192</div>
+        <div class="icon-size">Android High</div>
+      </div>
+
+      <div class="icon-card">
+        <img src="/icon-384x384.png" alt="Icon 384x384">
+        <div class="icon-label">Icon 384x384</div>
+        <div class="icon-size">High DPI</div>
+      </div>
+
+      <div class="icon-card">
+        <img src="/icon-512x512.png" alt="Icon 512x512">
+        <div class="icon-label">Icon 512x512</div>
+        <div class="icon-size">Splash Screen</div>
+      </div>
+    </div>
+
+    <div class="svg-section">
+      <h2>📐 Icône SVG Source</h2>
+      <div class="svg-display">
+        <img src="/icon.svg" alt="Baraaka SVG Icon">
+      </div>
+
+      <div class="info-box">
+        <h3>✨ À propos de l'icône Baraaka</h3>
+        <p>
+          L'icône Baraaka représente la gestion financière moderne avec :
+          <br><br>
+          • 💰 Une pièce dorée symbolisant le FCFA<br>
+          • 📈 Une flèche de croissance pour le développement financier<br>
+          • 🎨 Un dégradé bleu professionnel représentant la confiance<br>
+          • ✍️ Le nom "BARAAKA" pour une identification immédiate<br>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
