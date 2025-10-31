@@ -13,14 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  getTransactions,
-  getCategories,
-  saveTransaction,
-  updateTransaction,
-  deleteTransaction,
-} from "@/lib/storage";
-import { formatCurrency, formatShortDate, generateId } from "@/lib/utils";
+import { transactionsAPI, categoriesAPI } from "@/lib/api";
+import { formatCurrency, formatShortDate } from "@/lib/utils";
 import { Transaction, Category } from "@/types";
 import {
   Plus,
@@ -64,15 +58,22 @@ export default function TransactionsPage() {
     }
   }, [user]);
 
-  const loadData = () => {
+  const loadData = async () => {
     if (!user) return;
-    const userTransactions = getTransactions(user.id);
-    const userCategories = getCategories(user.id);
-    setTransactions(userTransactions);
-    setCategories(userCategories);
+    try {
+      const [transactionsData, categoriesData] = await Promise.all([
+        transactionsAPI.getAll(),
+        categoriesAPI.getAll(),
+      ]);
+      setTransactions(transactionsData.transactions || []);
+      setCategories(categoriesData.categories || []);
+    } catch (error) {
+      console.error('Erreur lors du chargement des données:', error);
+      alert('Erreur lors du chargement des données');
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (
@@ -85,32 +86,29 @@ export default function TransactionsPage() {
       return;
     }
 
-    if (editingTransaction) {
-      const updated: Transaction = {
-        ...editingTransaction,
+    try {
+      const category = categories.find(c => c.name === formData.category);
+      const transactionData = {
         type: formData.type,
         amount: parseFloat(formData.amount),
         category: formData.category,
+        categoryId: category?.id,
         description: formData.description,
         date: formData.date,
       };
-      updateTransaction(updated);
-    } else {
-      const newTransaction: Transaction = {
-        id: generateId(),
-        userId: user.id,
-        type: formData.type,
-        amount: parseFloat(formData.amount),
-        category: formData.category,
-        description: formData.description,
-        date: formData.date,
-        createdAt: new Date().toISOString(),
-      };
-      saveTransaction(newTransaction);
-    }
 
-    loadData();
-    closeModal();
+      if (editingTransaction) {
+        await transactionsAPI.update(editingTransaction.id, transactionData);
+      } else {
+        await transactionsAPI.create(transactionData);
+      }
+
+      await loadData();
+      closeModal();
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+      alert('Erreur lors de la sauvegarde de la transaction');
+    }
   };
 
   const handleEdit = (transaction: Transaction) => {
@@ -125,10 +123,15 @@ export default function TransactionsPage() {
     setShowModal(true);
   };
 
-  const handleDelete = (transaction: Transaction) => {
+  const handleDelete = async (transaction: Transaction) => {
     if (confirm("Êtes-vous sûr de vouloir supprimer cette transaction ?")) {
-      deleteTransaction(transaction.id);
-      loadData();
+      try {
+        await transactionsAPI.delete(transaction.id);
+        await loadData();
+      } catch (error) {
+        console.error('Erreur lors de la suppression:', error);
+        alert('Erreur lors de la suppression de la transaction');
+      }
     }
   };
 

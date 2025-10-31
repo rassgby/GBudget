@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthGuard from '@/components/AuthGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getTransactions, getCategories } from '@/lib/storage';
+import { transactionsAPI, categoriesAPI } from '@/lib/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Transaction, Category } from '@/types';
 import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, Calendar, Activity, Plus } from 'lucide-react';
@@ -20,12 +20,22 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (user) {
-      const userTransactions = getTransactions(user.id);
-      const userCategories = getCategories(user.id);
-      setTransactions(userTransactions);
-      setCategories(userCategories);
+      loadData();
     }
   }, [user]);
+
+  const loadData = async () => {
+    try {
+      const [transactionsData, categoriesData] = await Promise.all([
+        transactionsAPI.getAll(),
+        categoriesAPI.getAll(),
+      ]);
+      setTransactions(transactionsData.transactions || []);
+      setCategories(categoriesData.categories || []);
+    } catch (error) {
+      console.error('Erreur lors du chargement des données:', error);
+    }
+  };
 
   // Calculs des statistiques
   const totalIncome = transactions

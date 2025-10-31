@@ -7,8 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { getCategories, saveCategory, updateCategory, deleteCategory, getTransactions } from '@/lib/storage';
-import { generateId } from '@/lib/utils';
+import { categoriesAPI, transactionsAPI } from '@/lib/api';
 import { Category } from '@/types';
 import { Plus, Pencil, Trash2, Tag } from 'lucide-react';
 
@@ -43,13 +42,18 @@ export default function CategoriesPage() {
     }
   }, [user]);
 
-  const loadCategories = () => {
+  const loadCategories = async () => {
     if (!user) return;
-    const userCategories = getCategories(user.id);
-    setCategories(userCategories);
+    try {
+      const data = await categoriesAPI.getAll();
+      setCategories(data.categories || []);
+    } catch (error) {
+      console.error('Erreur lors du chargement des catégories:', error);
+      alert('Erreur lors du chargement des catégories');
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!user || !formData.name) {
@@ -68,25 +72,24 @@ export default function CategoriesPage() {
       return;
     }
 
-    if (editingCategory) {
-      const updated: Category = {
-        ...editingCategory,
+    try {
+      const categoryData = {
         name: formData.name,
         color: formData.color,
       };
-      updateCategory(updated);
-    } else {
-      const newCategory: Category = {
-        id: generateId(),
-        name: formData.name,
-        color: formData.color,
-        userId: user.id,
-      };
-      saveCategory(newCategory);
-    }
 
-    loadCategories();
-    closeModal();
+      if (editingCategory) {
+        await categoriesAPI.update(editingCategory.id, categoryData);
+      } else {
+        await categoriesAPI.create(categoryData);
+      }
+
+      await loadCategories();
+      closeModal();
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+      alert('Erreur lors de la sauvegarde de la catégorie');
+    }
   };
 
   const handleEdit = (category: Category) => {
@@ -98,23 +101,29 @@ export default function CategoriesPage() {
     setShowModal(true);
   };
 
-  const handleDelete = (category: Category) => {
-    // Vérifier si la catégorie est utilisée dans des transactions
-    const transactions = getTransactions(user!.id);
-    const isUsed = transactions.some(t => t.category === category.name);
+  const handleDelete = async (category: Category) => {
+    try {
+      // Vérifier si la catégorie est utilisée dans des transactions
+      const transactionsData = await transactionsAPI.getAll();
+      const transactions = transactionsData.transactions || [];
+      const isUsed = transactions.some(t => t.category === category.name);
 
-    if (isUsed) {
-      if (!confirm('Cette catégorie est utilisée dans des transactions. Êtes-vous sûr de vouloir la supprimer ?')) {
-        return;
+      if (isUsed) {
+        if (!confirm('Cette catégorie est utilisée dans des transactions. Êtes-vous sûr de vouloir la supprimer ?')) {
+          return;
+        }
+      } else {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) {
+          return;
+        }
       }
-    } else {
-      if (!confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) {
-        return;
-      }
+
+      await categoriesAPI.delete(category.id);
+      await loadCategories();
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      alert('Erreur lors de la suppression de la catégorie');
     }
-
-    deleteCategory(category.id);
-    loadCategories();
   };
 
   const closeModal = () => {
