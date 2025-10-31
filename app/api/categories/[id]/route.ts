@@ -5,16 +5,15 @@ import { getUserFromRequest } from '@/lib/auth';
 // PUT - Mettre à jour une catégorie
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> } // 👈 Correction ici
 ) {
+  const { id } = await context.params; // 👈 On "await" les params
+
   try {
     const userId = await getUserFromRequest(request);
 
     if (!userId) {
-      return NextResponse.json(
-        { error: 'Non authentifié' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -30,7 +29,7 @@ export async function PUT(
     // Vérifier que la catégorie appartient à l'utilisateur
     const category = await prisma.category.findFirst({
       where: {
-        id: params.id,
+        id,
         userId,
       },
     });
@@ -42,9 +41,9 @@ export async function PUT(
       );
     }
 
-    // Mettre à jour
+    // Mettre à jour la catégorie
     const updatedCategory = await prisma.category.update({
-      where: { id: params.id },
+      where: { id },
       data: { name, color },
     });
 
@@ -67,22 +66,21 @@ export async function PUT(
 // DELETE - Supprimer une catégorie
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> } // 👈 Correction ici aussi
 ) {
+  const { id } = await context.params;
+
   try {
     const userId = await getUserFromRequest(request);
 
     if (!userId) {
-      return NextResponse.json(
-        { error: 'Non authentifié' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
 
     // Vérifier que la catégorie appartient à l'utilisateur
     const category = await prisma.category.findFirst({
       where: {
-        id: params.id,
+        id,
         userId,
       },
     });
@@ -96,7 +94,7 @@ export async function DELETE(
 
     // Supprimer la catégorie
     await prisma.category.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json(
