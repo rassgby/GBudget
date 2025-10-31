@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, AuthContextType } from '@/types';
+import LoadingScreen from '@/components/LoadingScreen';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -101,7 +102,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>
-      {children}
+      {isLoading ? <LoadingScreen /> : children}
     </AuthContext.Provider>
   );
 }
