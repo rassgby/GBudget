@@ -16,12 +16,12 @@ export function hashPassword(password: string): string {
   return hash.toString(36);
 }
 
-// Format monétaire
+// Format monétaire (FCFA - Franc CFA)
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR'
-  }).format(amount);
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount) + ' FCFA';
 }
 
 // Format date

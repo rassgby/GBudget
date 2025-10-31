@@ -173,7 +173,7 @@ export default function Home() {
               <div className="text-gray-600 font-medium">Gratuit</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-green-600 mb-2">0€</div>
+              <div className="text-4xl md:text-5xl font-bold text-green-600 mb-2">0 FCFA</div>
               <div className="text-gray-600 font-medium">Frais cachés</div>
             </div>
             <div className="text-center">

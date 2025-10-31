@@ -438,15 +438,15 @@ export default function TransactionsPage() {
                     {/* Montant */}
                     <div className="space-y-2">
                       <Label htmlFor="amount" className="text-xs xs:text-sm sm:text-base font-medium">
-                        Montant (€) <span className="text-red-500">*</span>
+                        Montant (FCFA) <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="amount"
                         type="number"
-                        inputMode="decimal"
-                        step="0.01"
-                        min="0.01"
-                        placeholder="0.00"
+                        inputMode="numeric"
+                        step="1"
+                        min="1"
+                        placeholder="0"
                         value={formData.amount}
                         onChange={(e) =>
                           setFormData({ ...formData, amount: e.target.value })
