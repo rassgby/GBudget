@@ -8,10 +8,10 @@ const prisma = new PrismaClient();
  */
 export async function GET(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = context.params;
+    const { id } = await context.params;
 
     const budget = await prisma.budget.findUnique({
       where: { id },
@@ -36,10 +36,10 @@ export async function GET(
  */
 export async function PATCH(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = context.params;
+    const { id } = await context.params;
     const data = await req.json();
 
     const updatedBudget = await prisma.budget.update({
@@ -62,10 +62,10 @@ export async function PATCH(
  */
 export async function DELETE(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = context.params;
+    const { id } = await context.params;
 
     await prisma.budget.delete({
       where: { id },
