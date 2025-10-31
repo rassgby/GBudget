@@ -94,7 +94,7 @@ export default function RegisterPage() {
               <Input
                 id="name"
                 type="text"
-                placeholder="Jean Dupont"
+                placeholder="Rassoul Goudiaby"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={isLoading}
@@ -105,7 +105,7 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="jean@example.com"
+                placeholder="rassoul@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
