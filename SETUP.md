@@ -1,6 +1,6 @@
 # Guide de configuration - GBudget
 
-Ce guide vous aidera à configurer GBudget avec la nouvelle base de données et les fonctionnalités d'export.
+Ce guide vous aidera à configurer GBudget avec MongoDB et les fonctionnalités d'export.
 
 ## 🚀 Installation
 
@@ -10,7 +10,47 @@ Ce guide vous aidera à configurer GBudget avec la nouvelle base de données et 
 npm install
 ```
 
-### 2. Configuration de la base de données
+### 2. Configuration de MongoDB
+
+Vous avez **deux options** pour MongoDB :
+
+#### Option A : MongoDB Local (Développement)
+
+**Installer MongoDB** :
+
+- **macOS** (avec Homebrew) :
+  ```bash
+  brew tap mongodb/brew
+  brew install mongodb-community
+  brew services start mongodb-community
+  ```
+
+- **Windows** : Téléchargez et installez depuis [mongodb.com/download-center/community](https://www.mongodb.com/try/download/community)
+
+- **Linux (Ubuntu/Debian)** :
+  ```bash
+  wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+  echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+  sudo apt-get update
+  sudo apt-get install -y mongodb-org
+  sudo systemctl start mongod
+  ```
+
+**Vérifier que MongoDB fonctionne** :
+```bash
+mongosh
+# Vous devriez voir une connexion réussie
+```
+
+#### Option B : MongoDB Atlas (Cloud - Recommandé pour la production)
+
+1. Créez un compte gratuit sur [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
+2. Créez un nouveau cluster (le tier gratuit suffit)
+3. Créez un utilisateur de base de données
+4. Whitelist votre adresse IP (ou `0.0.0.0/0` pour tous)
+5. Obtenez votre connection string (bouton "Connect" → "Connect your application")
+
+### 3. Configuration de l'environnement
 
 #### Créer le fichier .env
 
@@ -20,11 +60,22 @@ Copiez le fichier `.env.example` en `.env` :
 cp .env.example .env
 ```
 
-Modifiez le fichier `.env` si nécessaire :
+Modifiez le fichier `.env` selon votre configuration :
 
+**Pour MongoDB Local** :
 ```env
-# Database
-DATABASE_URL="file:./dev.db"
+# Database MongoDB Local
+DATABASE_URL="mongodb://localhost:27017/gbudget"
+
+# NextAuth
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="votre-secret-unique-ici"
+```
+
+**Pour MongoDB Atlas** :
+```env
+# Database MongoDB Atlas
+DATABASE_URL="mongodb+srv://username:password@cluster.mongodb.net/gbudget?retryWrites=true&w=majority"
 
 # NextAuth
 NEXTAUTH_URL="http://localhost:3000"
@@ -37,21 +88,26 @@ NEXTAUTH_SECRET="votre-secret-unique-ici"
 openssl rand -base64 32
 ```
 
+### 4. Configuration de Prisma
+
 #### Générer le client Prisma
 
 ```bash
 npx prisma generate
 ```
 
-#### Créer la base de données
+#### Pousser le schéma vers MongoDB
 
 ```bash
 npx prisma db push
 ```
 
-Cette commande va créer le fichier `prisma/dev.db` avec toutes les tables nécessaires.
+Cette commande va créer les collections nécessaires dans MongoDB :
+- `users`
+- `categories`
+- `transactions`
 
-### 3. Démarrer l'application
+### 5. Démarrer l'application
 
 ```bash
 npm run dev
@@ -79,14 +135,16 @@ L'application sera disponible sur [http://localhost:3000](http://localhost:3000)
 
 ### Base de données
 
-L'application utilise maintenant une vraie base de données (SQLite) au lieu du localStorage :
+L'application utilise maintenant MongoDB au lieu du localStorage :
 
 - **Avantages** :
-  - Données persistantes
+  - Données persistantes et distribuées
   - Plus sécurisé (mots de passe hashés avec bcrypt)
   - Authentification JWT avec cookies HttpOnly
   - Relations entre les données
-  - Possibilité de migrer vers PostgreSQL en production
+  - Scalabilité (MongoDB Atlas)
+  - Backups automatiques (avec Atlas)
+  - Réplication et haute disponibilité
 
 ## 🔐 Authentification
 
@@ -108,31 +166,31 @@ L'application est entièrement responsive et optimisée pour :
 
 ## 🗄️ Structure de la base de données
 
-### Tables
+### Collections MongoDB
 
 #### users
-- `id` : UUID
+- `_id` : ObjectId
 - `name` : Nom de l'utilisateur
 - `email` : Email unique
 - `password` : Mot de passe hashé
 - `createdAt` / `updatedAt` : Timestamps
 
 #### categories
-- `id` : UUID
+- `_id` : ObjectId
 - `name` : Nom de la catégorie
 - `color` : Couleur hexadécimale
-- `userId` : Référence vers l'utilisateur
-- Contrainte unique : `(userId, name)`
+- `userId` : ObjectId (référence vers users)
+- Index unique : `(userId, name)`
 
 #### transactions
-- `id` : UUID
-- `userId` : Référence vers l'utilisateur
+- `_id` : ObjectId
+- `userId` : ObjectId (référence vers users)
 - `type` : 'income' ou 'expense'
-- `amount` : Montant (float)
-- `category` : Nom de la catégorie
-- `categoryId` : Référence vers la catégorie (optionnelle)
-- `description` : Description
-- `date` : Date de la transaction
+- `amount` : Number (montant)
+- `category` : String (nom de la catégorie)
+- `categoryId` : ObjectId (référence vers categories)
+- `description` : String
+- `date` : String
 - `createdAt` / `updatedAt` : Timestamps
 
 ## 🔧 Commandes utiles
@@ -143,11 +201,15 @@ L'application est entièrement responsive et optimisée pour :
 # Ouvrir Prisma Studio (interface graphique)
 npx prisma studio
 
-# Réinitialiser la base de données
+# Réinitialiser la base de données (⚠️ supprime toutes les données)
 npx prisma db push --force-reset
 
-# Voir les migrations
-npx prisma migrate dev
+# Visualiser les données avec MongoDB Shell
+mongosh
+use gbudget
+db.users.find()
+db.transactions.find()
+db.categories.find()
 ```
 
 ### Développement
@@ -189,31 +251,32 @@ npm run lint
 - `PUT /api/transactions/[id]` - Modifier une transaction
 - `DELETE /api/transactions/[id]` - Supprimer une transaction
 
-## 🚨 Migration vers PostgreSQL (Production)
+## 🌐 Déploiement en production
 
-Pour passer à PostgreSQL en production :
+### Recommandations
 
-1. Installer PostgreSQL
-2. Modifier `prisma/schema.prisma` :
+**MongoDB** : Utilisez MongoDB Atlas pour la production
+- Backups automatiques
+- Monitoring intégré
+- Sécurité renforcée
+- Scalabilité automatique
+- Tier gratuit disponible (512 MB)
 
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-```
+**Hébergement** : Options recommandées
+- **Vercel** : Déploiement automatique depuis GitHub, tier gratuit
+- **Netlify** : Similaire à Vercel
+- **Railway** : Support MongoDB intégré
+- **Render** : Bon support pour Next.js
 
-3. Modifier `.env` :
+### Configuration pour Vercel
 
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/gbudget?schema=public"
-```
+1. Connectez votre repository GitHub à Vercel
+2. Ajoutez les variables d'environnement :
+   - `DATABASE_URL` : Votre connection string MongoDB Atlas
+   - `NEXTAUTH_SECRET` : Votre secret JWT
+   - `NEXTAUTH_URL` : Votre URL de production
 
-4. Exécuter les migrations :
-
-```bash
-npx prisma migrate dev
-```
+3. Déployez !
 
 ## ❓ Dépannage
 
@@ -223,13 +286,19 @@ npx prisma migrate dev
 npx prisma generate
 ```
 
-### Erreur de base de données
+### Erreur de connexion MongoDB
 
+**Local** :
 ```bash
-npx prisma db push --force-reset
+# Vérifier que MongoDB est démarré
+brew services list  # macOS
+sudo systemctl status mongod  # Linux
 ```
 
-**⚠️ Attention** : Cela supprimera toutes les données !
+**Atlas** :
+- Vérifiez que votre IP est whitelistée
+- Vérifiez vos identifiants dans l'URL de connexion
+- Testez la connexion avec mongosh
 
 ### Problème de port
 
@@ -239,12 +308,25 @@ Si le port 3000 est déjà utilisé :
 PORT=3001 npm run dev
 ```
 
+### Réinitialiser complètement la base de données
+
+**Local** :
+```bash
+mongosh
+use gbudget
+db.dropDatabase()
+npx prisma db push
+```
+
+**Atlas** :
+Allez dans l'interface web → Collections → Supprimez la base de données
+
 ## 📚 Technologies utilisées
 
 - **Next.js 15** - Framework React
 - **TypeScript** - Typage statique
-- **Prisma** - ORM pour la base de données
-- **SQLite** - Base de données (dev)
+- **Prisma** - ORM pour MongoDB
+- **MongoDB** - Base de données NoSQL
 - **bcryptjs** - Hachage des mots de passe
 - **jose** - JWT pour l'authentification
 - **jsPDF** - Génération de PDF
@@ -261,5 +343,14 @@ L'application est maintenant prête à être utilisée ! Vous pouvez :
 3. Enregistrer vos transactions
 4. Visualiser vos statistiques dans le dashboard
 5. Exporter vos données en PDF ou Excel
+
+## 🔒 Sécurité en production
+
+- [ ] Changez le `NEXTAUTH_SECRET` avec une valeur unique et sécurisée
+- [ ] Utilisez HTTPS en production
+- [ ] Configurez les CORS si nécessaire
+- [ ] Limitez l'accès à votre base de données (IP whitelisting)
+- [ ] Activez l'authentification à deux facteurs sur MongoDB Atlas
+- [ ] Configurez des backups réguliers
 
 Bon budget ! 💰

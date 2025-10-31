@@ -59,7 +59,7 @@
 
 ### 2. 🗄️ Migration vers une vraie base de données
 
-#### Configuration Prisma + SQLite
+#### Configuration Prisma + MongoDB
 
 ✅ **Schéma de base de données complet** :
 - Modèle `User` : Utilisateurs avec authentification
@@ -69,10 +69,11 @@
 - Index pour optimiser les performances
 
 ✅ **Configuration Prisma** :
-- fichier `prisma/schema.prisma` créé
+- fichier `prisma/schema.prisma` créé avec MongoDB
 - Client Prisma configuré avec singleton pattern
-- Support SQLite pour le développement
-- Migration facile vers PostgreSQL pour la production
+- Support MongoDB local pour le développement
+- MongoDB Atlas recommandé pour la production
+- Collections avec ObjectIds natifs
 
 #### API Routes REST complètes
 
@@ -243,7 +244,7 @@ npm run dev
 - Filtrage avancé (dates, catégories, types, montants)
 
 ✅ **Migration complète vers base de données**
-- Prisma + SQLite configuré
+- Prisma + MongoDB configuré
 - API REST complète
 - Authentification sécurisée
 - Relations entre entités
@@ -257,17 +258,20 @@ npm run dev
 
 ## 💡 Notes techniques
 
-### Base de données actuelle : SQLite
+### Base de données : MongoDB
 
 **Avantages** :
-- Pas de serveur requis
-- Fichier unique (`prisma/dev.db`)
-- Parfait pour le développement
-- Installation zero
+- Base de données NoSQL performante
+- MongoDB local pour le développement
+- MongoDB Atlas (Cloud) pour la production avec tier gratuit
+- Scalabilité horizontale
+- Backups automatiques (avec Atlas)
+- Réplication et haute disponibilité
 
-**Pour la production** :
-- Recommandé : PostgreSQL
-- Migration facile (voir SETUP.md)
+**Options disponibles** :
+- MongoDB local : Installation simple pour le développement
+- MongoDB Atlas : Cloud gratuit avec 512 MB de stockage
+- Migration facile entre local et Atlas (voir SETUP.md)
 
 ### Authentification
 
