@@ -5,9 +5,10 @@ import { getUserFromRequest } from '@/lib/auth';
 // PUT - Mettre à jour une transaction
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const userId = await getUserFromRequest(request);
 
     if (!userId) {
@@ -45,7 +46,7 @@ export async function PUT(
     // Vérifier que la transaction appartient à l'utilisateur
     const transaction = await prisma.transaction.findFirst({
       where: {
-        id: params.id,
+        id,
         userId,
       },
     });
@@ -59,7 +60,7 @@ export async function PUT(
 
     // Mettre à jour
     const updatedTransaction = await prisma.transaction.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         type,
         amount,
@@ -89,9 +90,10 @@ export async function PUT(
 // DELETE - Supprimer une transaction
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const userId = await getUserFromRequest(request);
 
     if (!userId) {
@@ -104,7 +106,7 @@ export async function DELETE(
     // Vérifier que la transaction appartient à l'utilisateur
     const transaction = await prisma.transaction.findFirst({
       where: {
-        id: params.id,
+        id,
         userId,
       },
     });
@@ -118,7 +120,7 @@ export async function DELETE(
 
     // Supprimer la transaction
     await prisma.transaction.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json(

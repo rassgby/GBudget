@@ -106,7 +106,14 @@ export default function CategoriesPage() {
       // Vérifier si la catégorie est utilisée dans des transactions
       const transactionsData = await transactionsAPI.getAll();
       const transactions = transactionsData.transactions || [];
-      const isUsed = transactions.some(t => t.category === category.name);
+      interface Transaction {
+        id: string;
+        category: string;
+        // Add other fields as needed
+        [key: string]: any;
+      }
+
+      const isUsed: boolean = (transactionsData.transactions || []).some((t: Transaction) => t.category === category.name);
 
       if (isUsed) {
         if (!confirm('Cette catégorie est utilisée dans des transactions. Êtes-vous sûr de vouloir la supprimer ?')) {
@@ -135,10 +142,25 @@ export default function CategoriesPage() {
     });
   };
 
+  // Stocker les transactions dans le state
+  const [transactions, setTransactions] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      if (!user) return;
+      try {
+        const transactionsData = await transactionsAPI.getAll();
+        setTransactions(transactionsData.transactions || []);
+      } catch (error) {
+        console.error('Erreur lors du chargement des transactions:', error);
+      }
+    };
+    fetchTransactions();
+  }, [user]);
+
   // Compter les transactions par catégorie
   const getCategoryUsageCount = (categoryName: string): number => {
     if (!user) return 0;
-    const transactions = getTransactions(user.id);
     return transactions.filter(t => t.category === categoryName).length;
   };
 

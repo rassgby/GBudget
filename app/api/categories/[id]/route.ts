@@ -5,15 +5,17 @@ import { getUserFromRequest } from '@/lib/auth';
 // PUT - Mettre à jour une catégorie
 export async function PUT(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> } // 👈 Correction ici
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params; // 👈 On "await" les params
-
   try {
+    const { id } = await params;
     const userId = await getUserFromRequest(request);
 
     if (!userId) {
-      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Non authentifié' },
+        { status: 401 }
+      );
     }
 
     const body = await request.json();
@@ -41,7 +43,7 @@ export async function PUT(
       );
     }
 
-    // Mettre à jour la catégorie
+    // Mettre à jour
     const updatedCategory = await prisma.category.update({
       where: { id },
       data: { name, color },
@@ -66,15 +68,17 @@ export async function PUT(
 // DELETE - Supprimer une catégorie
 export async function DELETE(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> } // 👈 Correction ici aussi
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params;
-
   try {
+    const { id } = await params;
     const userId = await getUserFromRequest(request);
 
     if (!userId) {
-      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Non authentifié' },
+        { status: 401 }
+      );
     }
 
     // Vérifier que la catégorie appartient à l'utilisateur
