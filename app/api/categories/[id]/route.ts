@@ -5,9 +5,10 @@ import { getUserFromRequest } from '@/lib/auth';
 // PUT - Mettre à jour une catégorie
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const userId = await getUserFromRequest(request);
 
     if (!userId) {
@@ -30,7 +31,7 @@ export async function PUT(
     // Vérifier que la catégorie appartient à l'utilisateur
     const category = await prisma.category.findFirst({
       where: {
-        id: params.id,
+        id,
         userId,
       },
     });
@@ -44,7 +45,7 @@ export async function PUT(
 
     // Mettre à jour
     const updatedCategory = await prisma.category.update({
-      where: { id: params.id },
+      where: { id },
       data: { name, color },
     });
 
@@ -67,9 +68,10 @@ export async function PUT(
 // DELETE - Supprimer une catégorie
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const userId = await getUserFromRequest(request);
 
     if (!userId) {
@@ -82,7 +84,7 @@ export async function DELETE(
     // Vérifier que la catégorie appartient à l'utilisateur
     const category = await prisma.category.findFirst({
       where: {
-        id: params.id,
+        id,
         userId,
       },
     });
@@ -96,7 +98,7 @@ export async function DELETE(
 
     // Supprimer la catégorie
     await prisma.category.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json(
