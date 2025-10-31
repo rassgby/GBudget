@@ -252,7 +252,7 @@ export default function TransactionsPage() {
                     id="filterCategory"
                     value={filterCategory}
                     onChange={(e) => setFilterCategory(e.target.value)}
-                    className="flex h-9 sm:h-10 w-full rounded-md border border-gray-300 bg-white px-2.5 sm:px-3 py-2 text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                    className="flex h-9 sm:h-10 w-full rounded-md border border-gray-300 bg-white px-2.5 sm:px-3 py-2 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
                   >
                     <option value="">Toutes</option>
                     {categories.map((cat) => (
@@ -276,7 +276,7 @@ export default function TransactionsPage() {
                         e.target.value as "all" | "income" | "expense"
                       )
                     }
-                    className="flex h-9 sm:h-10 w-full rounded-md border border-gray-300 bg-white px-2.5 sm:px-3 py-2 text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                    className="flex h-9 sm:h-10 w-full rounded-md border border-gray-300 bg-white px-2.5 sm:px-3 py-2 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
                   >
                     <option value="all">Tous</option>
                     <option value="income">Revenus</option>
@@ -440,7 +440,7 @@ export default function TransactionsPage() {
                             category: "",
                           })
                         }
-                        className="flex h-10 xs:h-11 sm:h-12 w-full rounded-md border border-gray-300 bg-white px-3 xs:px-3.5 sm:px-4 py-2 text-sm xs:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all touch-manipulation"
+                        className="flex h-10 xs:h-11 sm:h-12 w-full rounded-md border border-gray-300 bg-white px-3 xs:px-3.5 sm:px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all touch-manipulation"
                         required
                       >
                         <option value="expense">Dépense</option>
@@ -466,7 +466,7 @@ export default function TransactionsPage() {
                         }
                         required
                         aria-describedby="amount-hint"
-                        className="h-10 xs:h-11 sm:h-12 text-sm xs:text-base px-3 xs:px-3.5 sm:px-4 touch-manipulation"
+                        className="h-10 xs:h-11 sm:h-12 px-3 xs:px-3.5 sm:px-4 touch-manipulation"
                       />
                       <p id="amount-hint" className="text-xs text-gray-500">
                         Entrez un montant positif
@@ -484,7 +484,7 @@ export default function TransactionsPage() {
                         onChange={(e) =>
                           setFormData({ ...formData, category: e.target.value })
                         }
-                        className="flex h-10 xs:h-11 sm:h-12 w-full rounded-md border border-gray-300 bg-white px-3 xs:px-3.5 sm:px-4 py-2 text-sm xs:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex h-10 xs:h-11 sm:h-12 w-full rounded-md border border-gray-300 bg-white px-3 xs:px-3.5 sm:px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
                         required
                         disabled={!formData.type}
                       >
@@ -522,7 +522,7 @@ export default function TransactionsPage() {
                         }
                         required
                         maxLength={100}
-                        className="h-10 xs:h-11 sm:h-12 text-sm xs:text-base px-3 xs:px-3.5 sm:px-4 touch-manipulation"
+                        className="h-10 xs:h-11 sm:h-12 px-3 xs:px-3.5 sm:px-4 touch-manipulation"
                       />
                       <p className="text-xs text-gray-500">
                         {formData.description.length}/100 caractères
@@ -543,7 +543,7 @@ export default function TransactionsPage() {
                         }
                         max={new Date().toISOString().split("T")[0]}
                         required
-                        className="h-10 xs:h-11 sm:h-12 text-sm xs:text-base px-3 xs:px-3.5 sm:px-4 touch-manipulation"
+                        className="h-10 xs:h-11 sm:h-12 px-3 xs:px-3.5 sm:px-4 touch-manipulation"
                       />
                     </div>
                   </CardContent>
