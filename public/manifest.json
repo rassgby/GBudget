@@ -1,0 +1,24 @@
+{
+  "name": "Baraaka - Gestion de Budget",
+  "short_name": "Baraaka",
+  "description": "Application de gestion de budget personnel avec suivi des dépenses et revenus en FCFA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
