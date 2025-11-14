@@ -1,19 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import { verifyToken } from '@/lib/auth'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
+import { getUserFromRequest } from '@/lib/auth'
 
 // GET /api/budgets - Fetch all budgets for authenticated user
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get('token')?.value
-    if (!token) {
+    const userId = await getUserFromRequest(request)
+    if (!userId) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
-
-    const payload = await verifyToken(token)
-    const userId = payload.userId
 
     const budgets = await prisma.budget.findMany({
       where: { userId },
@@ -33,13 +28,10 @@ export async function GET(request: NextRequest) {
 // POST /api/budgets - Create a new budget
 export async function POST(request: NextRequest) {
   try {
-    const token = request.cookies.get('token')?.value
-    if (!token) {
+    const userId = await getUserFromRequest(request)
+    if (!userId) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
-
-    const payload = await verifyToken(token)
-    const userId = payload.userId
 
     const body = await request.json()
     const { categoryId, category, amount, period, startDate, endDate, isActive } = body

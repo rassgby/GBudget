@@ -1,25 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import { verifyToken } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
+import { getUserFromRequest } from '@/lib/auth'
 
-const prisma = new PrismaClient()
+type Transaction = {
+  id: string
+  userId: string
+  type: string
+  amount: number
+  category: string
+  categoryId?: string | null
+  description: string
+  date: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+type Budget = {
+  id: string
+  userId: string
+  categoryId?: string | null
+  category: string
+  amount: number
+  period: string
+  startDate: string
+  endDate?: string | null
+  isActive: boolean
+  createdAt: Date
+  updatedAt: Date
+}
 
 // GET /api/statistics - Get comprehensive statistics for dashboard
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get('token')?.value
-    if (!token) {
+    const userId = await getUserFromRequest(request)
+    if (!userId) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
-
-    const payload = await verifyToken(token)
-    const userId = payload.userId
 
     // Fetch all transactions for the user
     const transactions = await prisma.transaction.findMany({
       where: { userId },
       orderBy: { date: 'desc' },
-    })
+    }) as Transaction[]
 
     // Fetch all budgets for the user
     const budgets = await prisma.budget.findMany({
@@ -27,17 +49,17 @@ export async function GET(request: NextRequest) {
         userId,
         isActive: true
       },
-    })
+    }) as Budget[]
 
     // Calculate total income
     const totalIncome = transactions
-      .filter((t) => t.type === 'income')
-      .reduce((sum, t) => sum + t.amount, 0)
+      .filter((t: Transaction) => t.type === 'income')
+      .reduce((sum: number, t: Transaction) => sum + t.amount, 0)
 
     // Calculate total expenses
     const totalExpenses = transactions
-      .filter((t) => t.type === 'expense')
-      .reduce((sum, t) => sum + t.amount, 0)
+      .filter((t: Transaction) => t.type === 'expense')
+      .reduce((sum: number, t: Transaction) => sum + t.amount, 0)
 
     // Calculate balance
     const balance = totalIncome - totalExpenses
@@ -47,12 +69,12 @@ export async function GET(request: NextRequest) {
 
     // Group expenses by category
     const expensesByCategory = transactions
-      .filter((t) => t.type === 'expense')
-      .reduce((acc: Record<string, number>, transaction) => {
+      .filter((t: Transaction) => t.type === 'expense')
+      .reduce((acc: Record<string, number>, transaction: Transaction) => {
         const category = transaction.category
         acc[category] = (acc[category] || 0) + transaction.amount
         return acc
-      }, {})
+      }, {} as Record<string, number>)
 
     // Get top 3 categories
     const topCategories = Object.entries(expensesByCategory)
@@ -76,7 +98,7 @@ export async function GET(request: NextRequest) {
       monthlyData[monthKey] = { income: 0, expenses: 0 }
     }
 
-    transactions.forEach((transaction) => {
+    transactions.forEach((transaction: Transaction) => {
       const transactionDate = new Date(transaction.date)
       if (transactionDate >= sixMonthsAgo) {
         const monthKey = transactionDate.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })
@@ -102,9 +124,9 @@ export async function GET(request: NextRequest) {
     // Calculate budget status
     const currentMonth = now.toISOString().slice(0, 7) // YYYY-MM format
 
-    const budgetStatus = budgets.map((budget) => {
+    const budgetStatus = budgets.map((budget: Budget) => {
       // Calculate spent amount for this budget period
-      const budgetTransactions = transactions.filter((t) => {
+      const budgetTransactions = transactions.filter((t: Transaction) => {
         if (t.type !== 'expense') return false
         if (t.category !== budget.category) return false
 
@@ -128,7 +150,7 @@ export async function GET(request: NextRequest) {
         return true
       })
 
-      const spent = budgetTransactions.reduce((sum, t) => sum + t.amount, 0)
+      const spent = budgetTransactions.reduce((sum: number, t: Transaction) => sum + t.amount, 0)
       const remaining = budget.amount - spent
       const percentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0
 

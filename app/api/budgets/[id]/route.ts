@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import { verifyToken } from '@/lib/auth'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
+import { getUserFromRequest } from '@/lib/auth'
 
 // PUT /api/budgets/[id] - Update a budget
 export async function PUT(
@@ -10,13 +8,10 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const token = request.cookies.get('token')?.value
-    if (!token) {
+    const userId = await getUserFromRequest(request)
+    if (!userId) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
-
-    const payload = await verifyToken(token)
-    const userId = payload.userId
 
     const { id } = await params
     const body = await request.json()
@@ -72,13 +67,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const token = request.cookies.get('token')?.value
-    if (!token) {
+    const userId = await getUserFromRequest(request)
+    if (!userId) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
-
-    const payload = await verifyToken(token)
-    const userId = payload.userId
 
     const { id } = await params
 
