@@ -73,3 +73,43 @@ export const categoriesAPI = {
       method: 'DELETE',
     }),
 };
+
+// Budgets API
+export const budgetsAPI = {
+  getAll: () => fetchAPI('/api/budgets'),
+
+  create: (budget: {
+    categoryId?: string;
+    category: string;
+    amount: number;
+    period: string;
+    startDate: string;
+    endDate?: string;
+    isActive?: boolean;
+  }) => fetchAPI('/api/budgets', {
+    method: 'POST',
+    body: JSON.stringify(budget),
+  }),
+
+  update: (id: string, budget: {
+    categoryId?: string;
+    category?: string;
+    amount?: number;
+    period?: string;
+    startDate?: string;
+    endDate?: string;
+    isActive?: boolean;
+  }) => fetchAPI(`/api/budgets/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(budget),
+  }),
+
+  delete: (id: string) => fetchAPI(`/api/budgets/${id}`, {
+    method: 'DELETE',
+  }),
+};
+
+// Statistics API
+export const statisticsAPI = {
+  get: () => fetchAPI('/api/statistics'),
+};

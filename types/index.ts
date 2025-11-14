@@ -25,6 +25,20 @@ export interface Transaction {
   createdAt: string;
 }
 
+export interface Budget {
+  id: string;
+  userId: string;
+  categoryId?: string | null;
+  category: string;
+  amount: number;
+  period: 'monthly' | 'weekly' | 'yearly';
+  startDate: string;
+  endDate?: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
@@ -38,4 +52,47 @@ export interface DashboardStats {
   totalExpenses: number;
   balance: number;
   transactionCount: number;
+}
+
+export interface TopCategory {
+  category: string;
+  amount: number;
+  percentage: number;
+}
+
+export interface ExpenseByCategory {
+  category: string;
+  amount: number;
+}
+
+export interface MonthlyTrend {
+  month: string;
+  income: number;
+  expenses: number;
+}
+
+export interface BudgetStatus {
+  id: string;
+  category: string;
+  budgetAmount: number;
+  spent: number;
+  remaining: number;
+  percentage: number;
+  isOverBudget: boolean;
+  period: string;
+}
+
+export interface StatisticsResponse {
+  summary: {
+    totalIncome: number;
+    totalExpenses: number;
+    balance: number;
+    savingsRate: number;
+  };
+  topCategories: TopCategory[];
+  expensesByCategory: ExpenseByCategory[];
+  monthlyTrend: MonthlyTrend[];
+  recentTransactions: Transaction[];
+  budgetStatus: BudgetStatus[];
+  transactionsCount: number;
 }
