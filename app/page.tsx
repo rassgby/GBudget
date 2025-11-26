@@ -374,7 +374,7 @@ export default function Home() {
                 <div className="bg-blue-600 p-2 rounded-lg">
                   <Wallet className="h-6 w-6 text-white" />
                 </div>
-                <span className="text-2xl font-bold text-white">GBudget</span>
+                <span className="text-2xl font-bold text-white">Baraaka</span>
               </div>
               <p className="text-gray-400 max-w-md">
                 Votre solution complète pour une gestion budgétaire intelligente et sans effort
