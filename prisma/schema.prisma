@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions Transaction[]
+  categories   Category[]
+  budgets      Budget[]
+
+  @@map("users")
+}
+
+model Category {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  name   String
+  color  String
+  userId String @db.ObjectId
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@unique([userId, name])
+  @@map("categories")
+}
+
+model Transaction {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  type        String   // 'income', 'expense' or 'transfer'
+  amount      Float
+  category    String
+  categoryId  String?  @db.ObjectId
+  description String
+  date        String
+  fromAccount String?  // Pour les transferts: compte source
+  toAccount   String?  // Pour les transferts: compte destination
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryDetail Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([date])
+  @@index([type])
+  @@map("transactions")
+}
+
+model Budget {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  categoryId String?  @db.ObjectId
+  category   String   // Category name for display
+  amount     Float    // Budget limit
+  period     String   @default("monthly") // 'monthly', 'weekly', 'yearly'
+  startDate  String   // ISO date string
+  endDate    String?  // Optional end date for budget
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+  @@map("budgets")
+}

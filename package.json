@@ -1,0 +1,50 @@
+{
+  "name": "baraaka",
+  "version": "1.0.0",
+  "description": "Application de gestion budgétaire Baraaka",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate || echo 'Prisma generate failed, continuing anyway'",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "prisma:studio": "prisma studio"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://local_proxy@127.0.0.1:61341/git/rassgby/GBudget"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.18.0",
+    "@radix-ui/react-select": "^2.2.6",
+    "bcryptjs": "^3.0.2",
+    "clsx": "^2.1.1",
+    "jose": "^6.1.0",
+    "jspdf": "^3.0.3",
+    "jspdf-autotable": "^5.0.2",
+    "lucide-react": "^0.548.0",
+    "next": "^16.0.1",
+    "prisma": "^6.18.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "recharts": "^3.3.0",
+    "tailwind-merge": "^3.3.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.16",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^24.9.2",
+    "@types/react": "^19.2.2",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.16",
+    "typescript": "^5.9.3"
+  }
+}
