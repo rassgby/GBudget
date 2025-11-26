@@ -383,7 +383,7 @@ export default function Home() {
             
             <div className="border-t border-gray-800 pt-8 text-center">
               <p className="text-sm text-gray-500">
-                &copy; 2025 GBudget. Tous droits réservés. Application de gestion de budget personnel.
+                &copy; 2025 Baraaka. Tous droits réservés. Application de gestion de budget personnel.
               </p>
             </div>
           </div>
