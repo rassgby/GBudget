@@ -18,11 +18,12 @@ import {
   ArrowLeftRight,
   Search,
   X,
-  TrendingUp,
-  TrendingDown,
-  Wallet,
   Calendar,
   MoreVertical,
+  Wallet,
+  ShoppingCart,
+  Banknote,
+  RefreshCw,
 } from 'lucide-react';
 import { ExportButton } from '@/components/ExportDialog';
 
@@ -49,38 +50,20 @@ export default function TransactionsPage() {
     toAccount: '',
   });
 
-  // Types prédéfinis
-  const expenseTypes = [
-    { name: 'Alimentation', icon: '🍔' },
-    { name: 'Transport', icon: '🚗' },
-    { name: 'Logement', icon: '🏠' },
-    { name: 'Santé', icon: '💊' },
-    { name: 'Loisirs', icon: '🎮' },
-    { name: 'Shopping', icon: '🛍️' },
-    { name: 'Factures', icon: '📄' },
-    { name: 'Restaurant', icon: '🍽️' },
+  // Catégories prédéfinies par type
+  const expenseCategories = [
+    'Alimentation', 'Transport', 'Logement', 'Santé', 
+    'Loisirs', 'Shopping', 'Factures', 'Restaurant'
   ];
 
-  const incomeTypes = [
-    { name: 'Salaire', icon: '💰' },
-    { name: 'Transfert reçu', icon: '📥' },
-    { name: 'Cadeau', icon: '🎁' },
-    { name: 'Remboursement', icon: '↩️' },
-    { name: 'Vente', icon: '🏷️' },
-    { name: 'Freelance', icon: '💼' },
-    { name: 'Prime', icon: '🏆' },
-    { name: 'Investissement', icon: '📈' },
+  const incomeCategories = [
+    'Salaire', 'Transfert reçu', 'Cadeau', 'Remboursement', 
+    'Vente', 'Freelance', 'Prime', 'Investissement'
   ];
 
-  const transferTypes = [
-    { name: 'Orange Money', icon: '🟠' },
-    { name: 'Wave', icon: '🌊' },
-    { name: 'Free Money', icon: '🔵' },
-    { name: 'Moov Money', icon: '🟣' },
-    { name: 'Virement', icon: '🏦' },
-    { name: 'Espèces', icon: '💵' },
-    { name: 'Western Union', icon: '🌐' },
-    { name: 'MoneyGram', icon: '💱' },
+  const transferMethods = [
+    'Orange Money', 'Wave', 'Free Money', 'Moov Money', 
+    'Virement', 'Espèces', 'Western Union', 'MoneyGram'
   ];
 
   useEffect(() => {
@@ -91,7 +74,6 @@ export default function TransactionsPage() {
 
   const loadData = async () => {
     if (!user) return;
-
     try {
       setLoading(true);
       const [transactionsData, categoriesData] = await Promise.all([
@@ -198,7 +180,7 @@ export default function TransactionsPage() {
     });
   };
 
-  // Filtrer les transactions (pour la liste uniquement)
+  // Filtrer les transactions
   const filteredTransactions = transactions
     .filter((t) => {
       const matchesSearch =
@@ -209,24 +191,11 @@ export default function TransactionsPage() {
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  // Stats globales (toutes les transactions, non affectées par les filtres)
-  const stats = {
-    totalIncome: transactions
-      .filter(t => t.type === 'income')
-      .reduce((sum, t) => sum + t.amount, 0),
-    totalExpenses: transactions
-      .filter(t => t.type === 'expense')
-      .reduce((sum, t) => sum + t.amount, 0),
-    totalTransfers: transactions
-      .filter(t => t.type === 'transfer')
-      .reduce((sum, t) => sum + t.amount, 0),
-  };
-
-  const availableTypes = formData.type === 'income' 
-    ? incomeTypes 
+  const availableCategories = formData.type === 'income' 
+    ? incomeCategories 
     : formData.type === 'transfer'
-      ? transferTypes
-      : expenseTypes;
+      ? transferMethods
+      : expenseCategories;
 
   const getTypeIcon = (type: string) => {
     if (type === 'income') return <ArrowDownRight className="h-4 w-4 text-green-600" />;
@@ -261,18 +230,14 @@ export default function TransactionsPage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 pb-24 md:pb-8">
         {/* Header fixe */}
         <div className="sticky top-14 z-30 bg-white border-b shadow-sm">
-          <div className="container mx-auto px-4 py-4 max-w-5xl">
+          <div className="container mx-auto px-4 py-4 max-w-3xl">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  Transactions
-                </h1>
-                <p className="text-sm text-gray-500">
-                  {filteredTransactions.length} opération(s)
-                </p>
+                <h1 className="text-xl font-bold text-gray-900">Transactions</h1>
+                <p className="text-sm text-gray-500">{filteredTransactions.length} opération(s)</p>
               </div>
               <div className="flex items-center gap-2">
                 <ExportButton
@@ -294,53 +259,14 @@ export default function TransactionsPage() {
           </div>
         </div>
 
-        <div className="container mx-auto px-4 py-4 max-w-5xl">
-          {/* Stats rapides */}
-          <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="bg-white rounded-xl p-3 shadow-sm border">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
-                  <TrendingUp className="h-3 w-3 text-green-600" />
-                </div>
-                <span className="text-xs text-gray-500">Revenus</span>
-              </div>
-              <p className="text-sm sm:text-base font-bold text-green-600">
-                {formatCurrency(stats.totalIncome)}
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl p-3 shadow-sm border">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="h-6 w-6 rounded-full bg-red-100 flex items-center justify-center">
-                  <TrendingDown className="h-3 w-3 text-red-600" />
-                </div>
-                <span className="text-xs text-gray-500">Dépenses</span>
-              </div>
-              <p className="text-sm sm:text-base font-bold text-red-600">
-                {formatCurrency(stats.totalExpenses)}
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl p-3 shadow-sm border">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center">
-                  <ArrowLeftRight className="h-3 w-3 text-blue-600" />
-                </div>
-                <span className="text-xs text-gray-500">Transferts</span>
-              </div>
-              <p className="text-sm sm:text-base font-bold text-blue-600">
-                {formatCurrency(stats.totalTransfers)}
-              </p>
-            </div>
-          </div>
-
+        <div className="container mx-auto px-4 py-4 max-w-3xl">
           {/* Recherche et filtres */}
           <div className="bg-white rounded-xl shadow-sm border mb-4">
             <div className="p-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Rechercher une transaction..."
+                  placeholder="Rechercher..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-9 bg-gray-50 border-0"
@@ -362,33 +288,36 @@ export default function TransactionsPage() {
                 </button>
                 <button
                   onClick={() => setFilterType('income')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                     filterType === 'income'
                       ? 'bg-green-600 text-white'
                       : 'bg-green-50 text-green-700 hover:bg-green-100'
                   }`}
                 >
-                  💰 Revenus
+                  <Banknote className="h-3 w-3" />
+                  Revenus
                 </button>
                 <button
                   onClick={() => setFilterType('expense')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                     filterType === 'expense'
                       ? 'bg-red-600 text-white'
                       : 'bg-red-50 text-red-700 hover:bg-red-100'
                   }`}
                 >
-                  🛒 Dépenses
+                  <ShoppingCart className="h-3 w-3" />
+                  Dépenses
                 </button>
                 <button
                   onClick={() => setFilterType('transfer')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                     filterType === 'transfer'
                       ? 'bg-blue-600 text-white'
                       : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
                   }`}
                 >
-                  🔄 Transferts
+                  <RefreshCw className="h-3 w-3" />
+                  Transferts
                 </button>
               </div>
             </div>
@@ -415,7 +344,6 @@ export default function TransactionsPage() {
                         <span className="px-1.5 py-0.5 bg-gray-100 rounded">
                           {transaction.category}
                         </span>
-                        <span>•</span>
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           {formatShortDate(transaction.date)}
@@ -478,7 +406,7 @@ export default function TransactionsPage() {
                 <Wallet className="h-12 w-12 text-gray-300 mx-auto mb-3" />
                 <p className="text-gray-500 font-medium">Aucune transaction</p>
                 <p className="text-sm text-gray-400 mt-1">
-                  Commencez par ajouter votre première transaction
+                  Ajoutez votre première transaction
                 </p>
                 <Button 
                   onClick={() => setShowModal(true)} 
@@ -486,7 +414,7 @@ export default function TransactionsPage() {
                   size="sm"
                 >
                   <Plus className="h-4 w-4 mr-1" />
-                  Ajouter une transaction
+                  Ajouter
                 </Button>
               </div>
             )}
@@ -505,10 +433,7 @@ export default function TransactionsPage() {
                 <h2 className="text-lg font-semibold">
                   {editingTransaction ? 'Modifier' : 'Nouvelle transaction'}
                 </h2>
-                <button 
-                  onClick={closeModal} 
-                  className="p-2 hover:bg-gray-100 rounded-full"
-                >
+                <button onClick={closeModal} className="p-2 hover:bg-gray-100 rounded-full">
                   <X className="h-5 w-5" />
                 </button>
               </div>
@@ -520,46 +445,44 @@ export default function TransactionsPage() {
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, type: 'expense', category: '' })}
-                      className={`p-3 rounded-xl border-2 transition-all ${
+                      className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1 ${
                         formData.type === 'expense'
                           ? 'border-red-500 bg-red-50'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <span className="text-2xl block mb-1">🛒</span>
+                      <ShoppingCart className={`h-5 w-5 ${formData.type === 'expense' ? 'text-red-600' : 'text-gray-400'}`} />
                       <span className="text-xs font-medium">Dépense</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, type: 'income', category: '' })}
-                      className={`p-3 rounded-xl border-2 transition-all ${
+                      className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1 ${
                         formData.type === 'income'
                           ? 'border-green-500 bg-green-50'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <span className="text-2xl block mb-1">💰</span>
+                      <Banknote className={`h-5 w-5 ${formData.type === 'income' ? 'text-green-600' : 'text-gray-400'}`} />
                       <span className="text-xs font-medium">Revenu</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, type: 'transfer', category: '' })}
-                      className={`p-3 rounded-xl border-2 transition-all ${
+                      className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1 ${
                         formData.type === 'transfer'
                           ? 'border-blue-500 bg-blue-50'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <span className="text-2xl block mb-1">🔄</span>
+                      <RefreshCw className={`h-5 w-5 ${formData.type === 'transfer' ? 'text-blue-600' : 'text-gray-400'}`} />
                       <span className="text-xs font-medium">Transfert</span>
                     </button>
                   </div>
 
                   {/* Montant */}
                   <div>
-                    <Label className="text-sm font-medium mb-1.5 block">
-                      Montant (FCFA)
-                    </Label>
+                    <Label className="text-sm font-medium mb-1.5 block">Montant (FCFA)</Label>
                     <Input
                       type="number"
                       inputMode="decimal"
@@ -573,38 +496,32 @@ export default function TransactionsPage() {
 
                   {/* Catégorie */}
                   <div>
-                    <Label className="text-sm font-medium mb-1.5 block">
-                      Catégorie
-                    </Label>
-                    <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto">
-                      {availableTypes.map((cat) => (
+                    <Label className="text-sm font-medium mb-1.5 block">Catégorie</Label>
+                    <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
+                      {availableCategories.map((cat) => (
                         <button
-                          key={cat.name}
+                          key={cat}
                           type="button"
-                          onClick={() => setFormData({ ...formData, category: cat.name })}
-                          className={`p-2 rounded-xl border text-center transition-all ${
-                            formData.category === cat.name
-                              ? 'border-blue-500 bg-blue-50'
-                              : 'border-gray-200 hover:border-gray-300'
+                          onClick={() => setFormData({ ...formData, category: cat })}
+                          className={`p-2.5 rounded-lg border text-left text-sm transition-all ${
+                            formData.category === cat
+                              ? 'border-blue-500 bg-blue-50 text-blue-700'
+                              : 'border-gray-200 hover:border-gray-300 text-gray-700'
                           }`}
                         >
-                          <span className="text-xl block">{cat.icon}</span>
-                          <span className="text-[10px] text-gray-600 block truncate">
-                            {cat.name}
-                          </span>
+                          {cat}
                         </button>
                       ))}
                       <button
                         type="button"
                         onClick={() => setFormData({ ...formData, category: 'custom' })}
-                        className={`p-2 rounded-xl border text-center transition-all ${
+                        className={`p-2.5 rounded-lg border text-left text-sm transition-all ${
                           formData.category === 'custom'
-                            ? 'border-blue-500 bg-blue-50'
-                            : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-gray-200 hover:border-gray-300 text-gray-700'
                         }`}
                       >
-                        <span className="text-xl block">➕</span>
-                        <span className="text-[10px] text-gray-600 block">Autre</span>
+                        + Autre
                       </button>
                     </div>
 
@@ -645,9 +562,7 @@ export default function TransactionsPage() {
 
                   {/* Description */}
                   <div>
-                    <Label className="text-sm font-medium mb-1.5 block">
-                      Description
-                    </Label>
+                    <Label className="text-sm font-medium mb-1.5 block">Description</Label>
                     <Input
                       placeholder="Ex: Courses du mois..."
                       value={formData.description}
@@ -671,12 +586,7 @@ export default function TransactionsPage() {
 
                 {/* Footer */}
                 <div className="flex gap-2 p-4 border-t bg-gray-50 sticky bottom-0">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={closeModal} 
-                    className="flex-1"
-                  >
+                  <Button type="button" variant="outline" onClick={closeModal} className="flex-1">
                     Annuler
                   </Button>
                   <Button 

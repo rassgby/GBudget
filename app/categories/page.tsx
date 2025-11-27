@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { categoriesAPI, transactionsAPI } from '@/lib/api';
 import { formatCurrency } from '@/lib/utils';
 import { Category, Transaction } from '@/types';
-import { Plus, Pencil, Trash2, Tag, X, Palette, Check, Search, MoreVertical, TrendingDown } from 'lucide-react';
+import { Plus, Pencil, Trash2, Tag, X, Check, Search, MoreVertical } from 'lucide-react';
 
 const PRESET_COLORS = [
   { name: 'Vert', value: '#10b981' },
@@ -72,7 +72,6 @@ export default function CategoriesPage() {
       return;
     }
 
-    // Vérifier si le nom existe déjà
     const nameExists = categories.some(
       c => c.name.toLowerCase() === formData.name.toLowerCase() &&
       c.id !== editingCategory?.id
@@ -135,22 +134,16 @@ export default function CategoriesPage() {
     });
   };
 
-  // Stats par catégorie
   const getCategoryStats = (categoryName: string) => {
     const categoryTransactions = transactions.filter(t => t.category === categoryName);
     const total = categoryTransactions.reduce((sum, t) => sum + t.amount, 0);
-    return {
-      count: categoryTransactions.length,
-      total,
-    };
+    return { count: categoryTransactions.length, total };
   };
 
-  // Filtrer les catégories
   const filteredCategories = categories.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Trier par utilisation
   const sortedCategories = [...filteredCategories].sort((a, b) => {
     return getCategoryStats(b.name).count - getCategoryStats(a.name).count;
   });
@@ -170,13 +163,13 @@ export default function CategoriesPage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-gray-50">
-        {/* Header fixe */}
+      <div className="min-h-screen bg-gray-50 pb-24 md:pb-8">
+        {/* Header */}
         <div className="sticky top-14 z-30 bg-white border-b shadow-sm">
           <div className="container mx-auto px-4 py-4 max-w-3xl">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Catégories</h1>
+                <h1 className="text-xl font-bold text-gray-900">Catégories</h1>
                 <p className="text-sm text-gray-500">{categories.length} catégorie(s)</p>
               </div>
               <Button onClick={() => setShowModal(true)} size="sm" className="bg-blue-600 hover:bg-blue-700">
@@ -188,12 +181,12 @@ export default function CategoriesPage() {
         </div>
 
         <div className="container mx-auto px-4 py-4 max-w-3xl">
-          {/* Barre de recherche */}
+          {/* Recherche */}
           <div className="bg-white rounded-xl shadow-sm border mb-4 p-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Rechercher une catégorie..."
+                placeholder="Rechercher..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9 bg-gray-50 border-0"
@@ -201,7 +194,7 @@ export default function CategoriesPage() {
             </div>
           </div>
 
-          {/* Liste des catégories */}
+          {/* Liste */}
           <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
             {sortedCategories.length > 0 ? (
               <div className="divide-y">
@@ -212,52 +205,37 @@ export default function CategoriesPage() {
                       key={category.id}
                       className="flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors"
                     >
-                      {/* Icône colorée */}
                       <div
-                        className="h-12 w-12 rounded-xl flex items-center justify-center shrink-0"
-                        style={{ backgroundColor: `${category.color}15` }}
+                        className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
+                        style={{ backgroundColor: `${category.color}20` }}
                       >
                         <Tag className="h-5 w-5" style={{ color: category.color }} />
                       </div>
 
-                      {/* Infos */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-semibold text-gray-900">{category.name}</p>
-                          <div
-                            className="h-3 w-3 rounded-full shrink-0"
-                            style={{ backgroundColor: category.color }}
-                          />
-                        </div>
-                        <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
-                          <span>{stats.count} transaction(s)</span>
-                          {stats.total > 0 && (
-                            <>
-                              <span>•</span>
-                              <span className="flex items-center gap-1">
-                                <TrendingDown className="h-3 w-3" />
-                                {formatCurrency(stats.total)}
-                              </span>
-                            </>
-                          )}
-                        </div>
+                        <p className="font-medium text-gray-900">{category.name}</p>
+                        <p className="text-sm text-gray-500">
+                          {stats.count} transaction(s)
+                          {stats.total > 0 && ` · ${formatCurrency(stats.total)}`}
+                        </p>
                       </div>
 
-                      {/* Menu actions */}
+                      <div
+                        className="h-4 w-4 rounded-full shrink-0"
+                        style={{ backgroundColor: category.color }}
+                      />
+
                       <div className="relative">
                         <button
                           onClick={() => setActiveMenu(activeMenu === category.id ? null : category.id)}
-                          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                          className="p-2 hover:bg-gray-100 rounded-lg"
                         >
                           <MoreVertical className="h-4 w-4 text-gray-400" />
                         </button>
 
                         {activeMenu === category.id && (
                           <>
-                            <div
-                              className="fixed inset-0 z-10"
-                              onClick={() => setActiveMenu(null)}
-                            />
+                            <div className="fixed inset-0 z-10" onClick={() => setActiveMenu(null)} />
                             <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border py-1 z-20 min-w-[120px]">
                               <button
                                 onClick={() => handleEdit(category)}
@@ -287,53 +265,27 @@ export default function CategoriesPage() {
                 <p className="text-gray-500 font-medium">
                   {searchTerm ? 'Aucune catégorie trouvée' : 'Aucune catégorie'}
                 </p>
-                <p className="text-sm text-gray-400 mt-1">
-                  {searchTerm ? 'Essayez un autre terme' : 'Créez votre première catégorie'}
-                </p>
                 {!searchTerm && (
                   <Button onClick={() => setShowModal(true)} className="mt-4" size="sm">
                     <Plus className="h-4 w-4 mr-1" />
-                    Créer une catégorie
+                    Créer
                   </Button>
                 )}
               </div>
             )}
           </div>
-
-          {/* Légende couleurs */}
-          <div className="mt-6 bg-white rounded-xl shadow-sm border p-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-              <Palette className="h-4 w-4" />
-              Couleurs disponibles
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {PRESET_COLORS.map((color) => (
-                <div
-                  key={color.value}
-                  className="flex items-center gap-1.5 px-2 py-1 bg-gray-50 rounded-full"
-                >
-                  <div
-                    className="h-3 w-3 rounded-full"
-                    style={{ backgroundColor: color.value }}
-                  />
-                  <span className="text-xs text-gray-600">{color.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
 
-        {/* Modal d'ajout/modification */}
+        {/* Modal */}
         {showModal && (
           <div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50"
             onClick={(e) => e.target === e.currentTarget && closeModal()}
           >
             <div className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
-              {/* Header */}
               <div className="flex items-center justify-between p-4 border-b">
                 <h2 className="text-lg font-semibold">
-                  {editingCategory ? 'Modifier la catégorie' : 'Nouvelle catégorie'}
+                  {editingCategory ? 'Modifier' : 'Nouvelle catégorie'}
                 </h2>
                 <button onClick={closeModal} className="p-2 hover:bg-gray-100 rounded-full">
                   <X className="h-5 w-5" />
@@ -342,11 +294,10 @@ export default function CategoriesPage() {
 
               <form onSubmit={handleSubmit}>
                 <div className="p-4 space-y-4">
-                  {/* Nom */}
                   <div>
-                    <Label className="text-sm font-medium mb-1.5 block">Nom de la catégorie</Label>
+                    <Label className="text-sm font-medium mb-1.5 block">Nom</Label>
                     <Input
-                      placeholder="Ex: Restaurant, Shopping..."
+                      placeholder="Ex: Restaurant..."
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="h-12"
@@ -355,7 +306,6 @@ export default function CategoriesPage() {
                     />
                   </div>
 
-                  {/* Couleur */}
                   <div>
                     <Label className="text-sm font-medium mb-2 block">Couleur</Label>
                     <div className="grid grid-cols-6 gap-3">
@@ -379,30 +329,24 @@ export default function CategoriesPage() {
                     </div>
                   </div>
 
-                  {/* Aperçu */}
                   <div className="bg-gray-50 rounded-xl p-4">
                     <p className="text-xs text-gray-500 mb-2">Aperçu</p>
                     <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
                       <div
                         className="h-10 w-10 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: `${formData.color}15` }}
+                        style={{ backgroundColor: `${formData.color}20` }}
                       >
                         <Tag className="h-5 w-5" style={{ color: formData.color }} />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">
-                          {formData.name || 'Nom de la catégorie'}
-                        </span>
-                        <div
-                          className="h-3 w-3 rounded-full"
-                          style={{ backgroundColor: formData.color }}
-                        />
-                      </div>
+                      <span className="font-medium">{formData.name || 'Nom'}</span>
+                      <div
+                        className="h-3 w-3 rounded-full ml-auto"
+                        style={{ backgroundColor: formData.color }}
+                      />
                     </div>
                   </div>
                 </div>
 
-                {/* Footer */}
                 <div className="flex gap-2 p-4 border-t bg-gray-50">
                   <Button type="button" variant="outline" onClick={closeModal} className="flex-1">
                     Annuler

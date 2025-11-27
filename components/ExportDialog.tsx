@@ -263,6 +263,7 @@ interface ExportButtonProps {
   variant?: 'default' | 'outline' | 'ghost';
   size?: 'default' | 'sm' | 'lg';
   className?: string;
+  iconOnly?: boolean;
 }
 
 export function ExportButton({
@@ -270,7 +271,8 @@ export function ExportButton({
   categories,
   variant = 'outline',
   size = 'default',
-  className
+  className,
+  iconOnly = false
 }: ExportButtonProps) {
   const [open, setOpen] = useState(false);
 
@@ -282,8 +284,8 @@ export function ExportButton({
         onClick={() => setOpen(true)}
         className={className}
       >
-        <FileDown className="w-4 h-4 mr-2" />
-        Exporter
+        <FileDown className={`w-4 h-4 ${iconOnly ? 'w-6 h-6 text-white' : 'mr-2'}`} />
+        {!iconOnly && 'Exporter'}
       </Button>
 
       <ExportDialog

@@ -204,30 +204,67 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {/* Actions rapides */}
-                <div className="flex flex-wrap justify-center lg:justify-start gap-2 sm:gap-3">
-                  <Link href="/transactions">
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white shadow-md">
-                      <Plus className="h-4 w-4 mr-1.5" />
-                      Transaction
+                {/* Actions rapides - Mobile: boutons circulaires avec labels */}
+                <div className="w-full lg:w-auto">
+                  {/* Version Mobile: Boutons circulaires avec icônes et labels */}
+                  <div className="flex justify-center gap-6 sm:gap-8 lg:hidden">
+                    <Link href="/transactions" className="flex flex-col items-center gap-1.5 group">
+                      <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform">
+                        <Plus className="h-6 w-6 text-white" />
+                      </div>
+                      <span className="text-xs font-medium text-gray-700">Transaction</span>
+                    </Link>
+                    
+                    <button 
+                      onClick={() => setBudgetDialogOpen(true)} 
+                      className="flex flex-col items-center gap-1.5 group"
+                    >
+                      <div className="h-14 w-14 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg shadow-green-500/30 group-hover:scale-105 transition-transform">
+                        <TrendingUp className="h-6 w-6 text-white" />
+                      </div>
+                      <span className="text-xs font-medium text-gray-700">Revenu</span>
+                    </button>
+                    
+                    <div className="flex flex-col items-center gap-1.5 group">
+                      <div className="h-14 w-14 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:scale-105 transition-transform">
+                        <ExportButton
+                          transactions={recentTransactions}
+                          categories={categories}
+                          variant="ghost"
+                          size="sm"
+                          className="h-full w-full p-0 hover:bg-transparent"
+                          iconOnly
+                        />
+                      </div>
+                      <span className="text-xs font-medium text-gray-700">Exporter</span>
+                    </div>
+                  </div>
+
+                  {/* Version Desktop: Boutons classiques */}
+                  <div className="hidden lg:flex lg:flex-wrap lg:gap-3">
+                    <Link href="/transactions">
+                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white shadow-md">
+                        <Plus className="h-4 w-4 mr-1.5" />
+                        Transaction
+                      </Button>
+                    </Link>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setBudgetDialogOpen(true)}
+                      className="bg-white shadow-md"
+                    >
+                      <Target className="h-4 w-4 mr-1.5" />
+                      Ajouter Revenu
                     </Button>
-                  </Link>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setBudgetDialogOpen(true)}
-                    className="bg-white shadow-md"
-                  >
-                    <Target className="h-4 w-4 mr-1.5" />
-                    Ajouter Revenu
-                  </Button>
-                  <ExportButton
-                    transactions={recentTransactions}
-                    categories={categories}
-                    variant="outline"
-                    size="sm"
-                    className="bg-white shadow-md"
-                  />
+                    <ExportButton
+                      transactions={recentTransactions}
+                      categories={categories}
+                      variant="outline"
+                      size="sm"
+                      className="bg-white shadow-md"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -235,42 +272,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Contenu scrollable */}
-        <div className="container mx-auto px-4 sm:px-6 max-w-6xl pb-8">
-
-          {/* Stats simples en 2 colonnes - Mobile uniquement */}
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8 lg:hidden">
-            <Card className="bg-white border-0 shadow-sm">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                    <TrendingUp className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Revenus</p>
-                    <p className="text-lg font-bold text-green-600">
-                      {showBalance ? formatCurrency(summary.totalIncome) : '•••••'}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white border-0 shadow-sm">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
-                    <TrendingDown className="h-5 w-5 text-red-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Dépenses</p>
-                    <p className="text-lg font-bold text-red-600">
-                      {showBalance ? formatCurrency(summary.totalExpenses) : '•••••'}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        <div className="container mx-auto px-4 sm:px-6 max-w-6xl pb-24 md:pb-8 pt-6">
 
           {/* Alertes budget (simplifié) */}
           {budgetStatus.filter(b => b.isOverBudget || b.percentage > 80).length > 0 && (
@@ -301,7 +303,7 @@ export default function DashboardPage() {
           )}
           
           {/* Historique des opérations */}
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-white border-0 shadow-sm mt-2">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base font-semibold text-gray-900">
