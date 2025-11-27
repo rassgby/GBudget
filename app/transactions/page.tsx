@@ -198,7 +198,7 @@ export default function TransactionsPage() {
     });
   };
 
-  // Filtrer les transactions
+  // Filtrer les transactions (pour la liste uniquement)
   const filteredTransactions = transactions
     .filter((t) => {
       const matchesSearch =
@@ -209,15 +209,15 @@ export default function TransactionsPage() {
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  // Stats
+  // Stats globales (toutes les transactions, non affectées par les filtres)
   const stats = {
-    totalIncome: filteredTransactions
+    totalIncome: transactions
       .filter(t => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0),
-    totalExpenses: filteredTransactions
+    totalExpenses: transactions
       .filter(t => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0),
-    totalTransfers: filteredTransactions
+    totalTransfers: transactions
       .filter(t => t.type === 'transfer')
       .reduce((sum, t) => sum + t.amount, 0),
   };

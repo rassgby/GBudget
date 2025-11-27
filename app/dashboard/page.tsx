@@ -96,81 +96,140 @@ export default function DashboardPage() {
   return (
     <AuthGuard>
       <div className="min-h-screen bg-gray-50">
-        {/* Section fixe sur mobile : Carte + Actions */}
-        <div className="md:relative md:bg-transparent sticky top-14 z-30 bg-gray-50 pb-3 pt-4 px-4 sm:px-6 md:py-6 lg:py-8">
+        {/* Section fixe : Carte + Actions */}
+        <div className="sticky top-14 z-30 bg-gradient-to-b from-gray-50 via-gray-50 to-gray-50/95 backdrop-blur-sm pb-4 pt-4 px-4 sm:px-6 lg:px-8 shadow-sm">
           <div className="container mx-auto max-w-6xl">
-            {/* Carte de crédit virtuelle */}
-            <div className="mb-4 sm:mb-6">
-              <div className="relative w-full max-w-sm mx-auto">
-                <div className="relative bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl overflow-hidden aspect-[1.7/1]">
-                  {/* Motifs décoratifs */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-full blur-2xl -translate-y-1/2 translate-x-1/4"></div>
-                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-green-500/30 to-cyan-500/30 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
-                  
-                  <div className="relative z-10 h-full flex flex-col justify-between">
-                    {/* Header */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="bg-gradient-to-br from-yellow-400 to-yellow-600 p-1.5 rounded-lg">
-                          <CreditCard className="h-4 w-4 text-slate-900" />
+            {/* Layout Desktop: Carte à gauche, Stats à droite */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:gap-8">
+              
+              {/* Carte de crédit virtuelle */}
+              <div className="mb-4 lg:mb-0 lg:flex-shrink-0">
+                <div className="relative w-full max-w-sm mx-auto lg:mx-0 lg:w-[380px]">
+                  <div className="relative bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+                    {/* Motifs décoratifs */}
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-green-500/20 to-cyan-500/20 rounded-full blur-3xl"></div>
+                    <div className="absolute top-1/2 left-1/2 w-48 h-48 bg-gradient-to-r from-blue-600/10 to-green-600/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+                    
+                    {/* Contenu de la carte */}
+                    <div className="relative z-10 p-5 sm:p-6">
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-4 lg:mb-5">
+                        <div className="flex items-center gap-2">
+                          <div className="bg-gradient-to-br from-yellow-400 to-yellow-600 p-2 rounded-lg shadow-lg">
+                            <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-slate-900" />
+                          </div>
+                          <span className="text-white font-bold text-sm sm:text-base">Baraaka</span>
                         </div>
-                        <span className="text-white font-bold text-sm">Baraaka</span>
+                        <button
+                          onClick={() => setShowBalance(!showBalance)}
+                          className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full"
+                        >
+                          {showBalance ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                        </button>
                       </div>
-                      <button
-                        onClick={() => setShowBalance(!showBalance)}
-                        className="text-gray-400 hover:text-white transition-colors p-1"
-                      >
-                        {showBalance ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                      </button>
-                    </div>
 
-                    {/* Solde */}
-                    <div className="text-center">
-                      <p className="text-gray-400 text-xs mb-0.5">Solde disponible</p>
-                      <p className={`text-xl sm:text-3xl font-bold ${summary.balance >= 0 ? 'text-white' : 'text-red-400'}`}>
-                        {showBalance ? formatCurrency(summary.balance) : '•••••••'}
-                      </p>
-                    </div>
-
-                    {/* Footer */}
-                    <div className="flex items-end justify-between">
-                      <div>
-                        <p className="text-gray-500 text-[10px] uppercase">Titulaire</p>
-                        <p className="text-white font-medium text-xs uppercase tracking-wide">
-                          {user?.name || 'Utilisateur'}
+                      {/* Solde - Centre */}
+                      <div className="text-center py-3 sm:py-4 lg:py-5">
+                        <p className="text-gray-400 text-xs sm:text-sm mb-1">Solde disponible</p>
+                        <p className={`text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight ${summary.balance >= 0 ? 'text-white' : 'text-red-400'}`}>
+                          {showBalance ? formatCurrency(summary.balance) : '•••••••'}
                         </p>
                       </div>
-                      <div className="w-10 h-7 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-md"></div>
+
+                      {/* Footer */}
+                      <div className="flex items-end justify-between mt-3 pt-3 lg:mt-4 lg:pt-4 border-t border-white/10">
+                        <div>
+                          <p className="text-gray-500 text-[10px] sm:text-xs uppercase tracking-wider">Titulaire</p>
+                          <p className="text-white font-semibold text-sm sm:text-base uppercase tracking-wide">
+                            {user?.name || 'Utilisateur'}
+                          </p>
+                        </div>
+                        {/* Puce de carte */}
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-8 sm:w-12 sm:h-9 bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 rounded-md shadow-md flex items-center justify-center">
+                            <div className="w-6 h-4 sm:w-7 sm:h-5 border border-yellow-600/30 rounded-sm"></div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Actions rapides */}
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
-              <Link href="/transactions">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white shadow-md">
-                  <Plus className="h-4 w-4 mr-1.5" />
-                  Transaction
-                </Button>
-              </Link>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setBudgetDialogOpen(true)}
-                className="bg-white shadow-md"
-              >
-                <Target className="h-4 w-4 mr-1.5" />
-                Ajouter Revenu
-              </Button>
-              <ExportButton
-                transactions={recentTransactions}
-                categories={categories}
-                variant="outline"
-                size="sm"
-                className="bg-white shadow-md"
-              />
+              {/* Section droite Desktop: Stats + Actions */}
+              <div className="flex-1 lg:flex lg:flex-col lg:justify-center">
+                {/* Stats rapides - Visible sur Desktop dans la section fixe */}
+                <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4 lg:mb-4">
+                  <div className="bg-white rounded-xl p-4 shadow-sm border">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                        <TrendingUp className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Revenus</p>
+                        <p className="text-lg font-bold text-green-600">
+                          {showBalance ? formatCurrency(summary.totalIncome) : '•••••'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-xl p-4 shadow-sm border">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
+                        <TrendingDown className="h-5 w-5 text-red-600" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Dépenses</p>
+                        <p className="text-lg font-bold text-red-600">
+                          {showBalance ? formatCurrency(summary.totalExpenses) : '•••••'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-xl p-4 shadow-sm border">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <Wallet className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Épargne</p>
+                        <p className="text-lg font-bold text-blue-600">
+                          {showBalance ? `${summary.savingsRate.toFixed(0)}%` : '•••'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions rapides */}
+                <div className="flex flex-wrap justify-center lg:justify-start gap-2 sm:gap-3">
+                  <Link href="/transactions">
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white shadow-md">
+                      <Plus className="h-4 w-4 mr-1.5" />
+                      Transaction
+                    </Button>
+                  </Link>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setBudgetDialogOpen(true)}
+                    className="bg-white shadow-md"
+                  >
+                    <Target className="h-4 w-4 mr-1.5" />
+                    Ajouter Revenu
+                  </Button>
+                  <ExportButton
+                    transactions={recentTransactions}
+                    categories={categories}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white shadow-md"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -178,8 +237,8 @@ export default function DashboardPage() {
         {/* Contenu scrollable */}
         <div className="container mx-auto px-4 sm:px-6 max-w-6xl pb-8">
 
-          {/* Stats simples en 2 colonnes */}
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          {/* Stats simples en 2 colonnes - Mobile uniquement */}
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8 lg:hidden">
             <Card className="bg-white border-0 shadow-sm">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
