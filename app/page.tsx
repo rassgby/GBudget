@@ -60,7 +60,7 @@ export default function Home() {
             <div className="flex flex-wrap justify-center gap-6 text-sm md:text-base text-blue-50">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5" />
-                <span>À partir de 2000 FCFA/mois</span>
+                <span>3000 FCFA/mois</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5" />
@@ -165,134 +165,72 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 md:py-28 bg-gray-50">
+      <section className="py-20 md:py-28 bg-gray-50" id="pricing">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 md:mb-20">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Nos formules
+              Une offre simple et complète
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-              Choisissez l'offre qui correspond à vos besoins
+              Accédez à toutes les fonctionnalités pour gérer vos finances efficacement
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {/* Pro Plan */}
-            <Card className="border-2 border-blue-500 hover:shadow-xl transition-all duration-300 relative">
+          <div className="max-w-md mx-auto">
+            {/* Premium Plan */}
+            <Card className="border-2 border-blue-500 hover:shadow-2xl transition-all duration-300 relative">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
-                  Populaire
+                <span className="bg-gradient-to-r from-blue-600 to-green-500 text-white px-6 py-1.5 rounded-full text-sm font-semibold shadow-lg">
+                  Offre Premium
                 </span>
               </div>
-              <CardHeader className="text-center pb-2 pt-8">
-                <div className="h-16 w-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Zap className="h-8 w-8 text-white" />
+              <CardHeader className="text-center pb-2 pt-10">
+                <div className="h-20 w-20 bg-gradient-to-br from-blue-600 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <Crown className="h-10 w-10 text-white" />
                 </div>
-                <CardTitle className="text-2xl mb-2">Pro</CardTitle>
-                <CardDescription className="text-base">Pour une gestion complète</CardDescription>
+                <CardTitle className="text-3xl mb-2">Baraaka Premium</CardTitle>
+                <CardDescription className="text-base">Tout ce dont vous avez besoin</CardDescription>
               </CardHeader>
               <CardContent className="text-center">
-                <div className="mb-6">
-                  <span className="text-4xl font-bold text-gray-900">2 000</span>
-                  <span className="text-gray-600"> FCFA/mois</span>
+                <div className="mb-8">
+                  <span className="text-5xl font-bold text-gray-900">3 000</span>
+                  <span className="text-gray-600 text-lg"> FCFA/mois</span>
                 </div>
-                <ul className="space-y-3 text-left mb-8">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-600">Transactions illimitées</span>
+                <ul className="space-y-4 text-left mb-8">
+                  <li className="flex items-center gap-3">
+                    <CheckCircle2 className="h-6 w-6 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Transactions illimitées</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-600">Catégories illimitées</span>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle2 className="h-6 w-6 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Catégories personnalisées</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-600">Export PDF & Excel</span>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle2 className="h-6 w-6 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Export PDF & Excel</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-600">Statistiques avancées</span>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle2 className="h-6 w-6 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Statistiques avancées</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle2 className="h-6 w-6 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Gestion de budgets</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle2 className="h-6 w-6 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Support prioritaire</span>
                   </li>
                 </ul>
-                <a href="https://pay.wave.com/m/M_sn_6OgqgsYN6-_n/c/sn/?amount=2000" target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">Souscrire - 2 000 FCFA</Button>
-                </a>
-              </CardContent>
-            </Card>
-
-            {/* Business Plan */}
-            <Card className="border-2 hover:border-yellow-400 hover:shadow-xl transition-all duration-300">
-              <CardHeader className="text-center pb-2">
-                <div className="h-16 w-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Crown className="h-8 w-8 text-yellow-600" />
-                </div>
-                <CardTitle className="text-2xl mb-2">Business</CardTitle>
-                <CardDescription className="text-base">Pour les pros</CardDescription>
-              </CardHeader>
-              <CardContent className="text-center">
-                <div className="mb-6">
-                  <span className="text-4xl font-bold text-gray-900">4 000</span>
-                  <span className="text-gray-600"> FCFA/mois</span>
-                </div>
-                <ul className="space-y-3 text-left mb-8">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-600">Tout de Pro</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-600">Multi-comptes</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-600">Rapports personnalisés</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-600">Support prioritaire</span>
-                  </li>
-                </ul>
-                <a href="https://pay.wave.com/m/M_sn_6OgqgsYN6-_n/c/sn/?amount=4000" target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full bg-yellow-500 hover:bg-yellow-600 text-white">Souscrire - 4 000 FCFA</Button>
-                </a>
-              </CardContent>
-            </Card>
-
-            {/* Enterprise Plan */}
-            <Card className="border-2 hover:border-purple-400 hover:shadow-xl transition-all duration-300">
-              <CardHeader className="text-center pb-2">
-                <div className="h-16 w-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Zap className="h-8 w-8 text-purple-600" />
-                </div>
-                <CardTitle className="text-2xl mb-2">Enterprise</CardTitle>
-                <CardDescription className="text-base">Pour les entreprises</CardDescription>
-              </CardHeader>
-              <CardContent className="text-center">
-                <div className="mb-6">
-                  <span className="text-4xl font-bold text-gray-900">7 000</span>
-                  <span className="text-gray-600"> FCFA/mois</span>
-                </div>
-                <ul className="space-y-3 text-left mb-8">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-600">Tout de Business</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-600">API & Intégrations</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-600">Gestion d'équipe</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-600">Support dédié 24/7</span>
-                  </li>
-                </ul>
-                <a href="https://pay.wave.com/m/M_sn_6OgqgsYN6-_n/c/sn/?amount=7000" target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full bg-purple-600 hover:bg-purple-700">Souscrire - 7 000 FCFA</Button>
-                </a>
+                <Link href="/subscribe">
+                  <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-6 text-lg font-semibold shadow-lg">
+                    Commencer maintenant
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <p className="text-sm text-gray-500 mt-4">
+                  Paiement sécurisé via Wave
+                </p>
               </CardContent>
             </Card>
           </div>

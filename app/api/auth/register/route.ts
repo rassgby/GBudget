@@ -10,8 +10,8 @@ export async function POST(request: NextRequest) {
       name, 
       email, 
       password,
-      subscriptionPlan = 'pro',
-      subscriptionStatus = 'pending'
+      subscriptionPlan = 'premium',
+      subscriptionStatus = 'active'
     } = body;
 
     // Validation
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Valider le plan d'abonnement
-    const validPlans: SubscriptionPlan[] = ['pro', 'business', 'enterprise'];
+    const validPlans: SubscriptionPlan[] = ['legacy', 'premium'];
     if (!validPlans.includes(subscriptionPlan)) {
       return NextResponse.json(
         { error: 'Plan d\'abonnement invalide' },

@@ -19,11 +19,12 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Abonnement
-  subscriptionPlan   String   @default("legacy") // 'legacy', 'pro', 'business', 'enterprise'
+  subscriptionPlan   String   @default("legacy") // 'legacy', 'premium'
   subscriptionStatus String   @default("active") // 'active', 'expired', 'pending'
   subscriptionStart  DateTime?
   subscriptionEnd    DateTime?
   paymentReference   String?  // Référence de paiement Wave
+  isAdmin            Boolean  @default(false) // Administrateur
 
   transactions Transaction[]
   categories   Category[]

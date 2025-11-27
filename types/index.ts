@@ -1,5 +1,5 @@
 
-export type SubscriptionPlan = 'legacy' | 'pro' | 'business' | 'enterprise';
+export type SubscriptionPlan = 'legacy' | 'premium';
 export type SubscriptionStatus = 'active' | 'expired' | 'pending';
 
 export interface User {
@@ -13,6 +13,7 @@ export interface User {
   subscriptionStart?: string;
   subscriptionEnd?: string;
   paymentReference?: string;
+  isAdmin?: boolean;
 }
 
 // Limites par plan d'abonnement
@@ -29,33 +30,9 @@ export const PLAN_LIMITS = {
     apiAccess: true,
     prioritySupport: true,
   },
-  pro: {
-    name: 'Pro',
-    price: 2000,
-    transactions: Infinity,
-    categories: Infinity,
-    budgets: 10,
-    exportPDF: true,
-    exportExcel: true,
-    multiAccounts: false,
-    apiAccess: false,
-    prioritySupport: false,
-  },
-  business: {
-    name: 'Business',
-    price: 4000,
-    transactions: Infinity,
-    categories: Infinity,
-    budgets: Infinity,
-    exportPDF: true,
-    exportExcel: true,
-    multiAccounts: true,
-    apiAccess: false,
-    prioritySupport: true,
-  },
-  enterprise: {
-    name: 'Enterprise',
-    price: 7000,
+  premium: {
+    name: 'Premium',
+    price: 3000,
     transactions: Infinity,
     categories: Infinity,
     budgets: Infinity,

@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { statisticsAPI, categoriesAPI, budgetsAPI } from '@/lib/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { StatisticsResponse, Category, Budget } from '@/types';
-import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, ArrowLeftRight, Plus, Target, AlertTriangle, CreditCard, Eye, EyeOff } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, ArrowLeftRight, Plus, Target, AlertTriangle, CreditCard, Eye, EyeOff, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ExportButton } from '@/components/ExportDialog';
@@ -232,6 +232,14 @@ export default function DashboardPage() {
                       size="sm"
                       className="bg-white shadow-md"
                     />
+                    {(user as any)?.isAdmin && (
+                      <Link href="/admin">
+                        <Button size="sm" variant="outline" className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100 shadow-md">
+                          <Shield className="h-4 w-4 mr-1.5" />
+                          Admin
+                        </Button>
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>

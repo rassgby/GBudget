@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
         subscriptionStatus: true,
         subscriptionStart: true,
         subscriptionEnd: true,
+        isAdmin: true,
       },
     });
 
