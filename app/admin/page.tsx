@@ -6,11 +6,19 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Users,
   Crown,
   Clock,
-  AlertTriangle,
   CheckCircle2,
   XCircle,
   Search,
@@ -21,9 +29,13 @@ import {
   Calendar,
   Mail,
   Trash2,
-  ChevronLeft,
   Wallet,
   BarChart3,
+  Edit,
+  LogOut,
+  X,
+  Save,
+  UserCog,
 } from 'lucide-react';
 
 interface UserData {
@@ -55,7 +67,7 @@ interface Stats {
 const PAYMENT_LINK = 'https://pay.wave.com/m/M_sn_6OgqgsYN6-_n/c/sn/?amount=3000';
 
 export default function AdminPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
   const [users, setUsers] = useState<UserData[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -64,7 +76,19 @@ export default function AdminPage() {
   const [filterPlan, setFilterPlan] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  
+  // États pour le modal d'édition
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<UserData | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    email: '',
+    subscriptionPlan: '',
+    subscriptionStatus: '',
+  });
+  const [editLoading, setEditLoading] = useState(false);
 
+  // Vérifier si l'utilisateur est admin
   useEffect(() => {
     if (user && !(user as any).isAdmin) {
       router.push('/dashboard');
@@ -113,7 +137,7 @@ export default function AdminPage() {
   };
 
   const handleDelete = async (userId: string, userName: string) => {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer le compte de ${userName} ? Cette action est irréversible.`)) {
+    if (!confirm(`⚠️ ATTENTION!\n\nVous êtes sur le point de supprimer définitivement le compte de "${userName}".\n\nToutes les données (transactions, catégories, budgets) seront perdues.\n\nCette action est IRRÉVERSIBLE.\n\nConfirmer la suppression ?`)) {
       return;
     }
 
@@ -133,6 +157,47 @@ export default function AdminPage() {
     }
   };
 
+  // Ouvrir le modal d'édition
+  const openEditModal = (userData: UserData) => {
+    setEditingUser(userData);
+    setEditForm({
+      name: userData.name,
+      email: userData.email,
+      subscriptionPlan: userData.subscriptionPlan,
+      subscriptionStatus: userData.subscriptionStatus,
+    });
+    setEditModalOpen(true);
+  };
+
+  // Sauvegarder les modifications
+  const handleSaveEdit = async () => {
+    if (!editingUser) return;
+    
+    setEditLoading(true);
+    try {
+      const response = await fetch(`/api/admin/users/${editingUser.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editForm.name,
+          email: editForm.email,
+          subscriptionPlan: editForm.subscriptionPlan,
+          subscriptionStatus: editForm.subscriptionStatus,
+        }),
+      });
+
+      if (response.ok) {
+        setEditModalOpen(false);
+        setEditingUser(null);
+        fetchUsers();
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
   const sendPaymentReminder = (email: string, name: string) => {
     const subject = encodeURIComponent('Rappel de paiement - Baraaka');
     const body = encodeURIComponent(
@@ -144,6 +209,11 @@ export default function AdminPage() {
       `L'équipe Baraaka`
     );
     window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
   };
 
   const filteredUsers = users.filter(u => {
@@ -192,29 +262,33 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
+      {/* Header Admin */}
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+        <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={() => router.push('/dashboard')}>
-                <ChevronLeft className="h-4 w-4 mr-1" />
-                Retour
-              </Button>
-              <div className="flex items-center gap-2">
-                <div className="h-10 w-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                  <Shield className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
-                  <p className="text-xs text-gray-500">Gestion des utilisateurs</p>
-                </div>
+              <div className="h-12 w-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+                <Shield className="h-6 w-6" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">Dashboard Admin</h1>
+                <p className="text-purple-100 text-sm">Gestion des utilisateurs Baraaka</p>
               </div>
             </div>
-            <Button onClick={fetchUsers} variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Actualiser
-            </Button>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-purple-100 hidden sm:block">
+                {(user as any)?.email}
+              </span>
+              <Button 
+                onClick={handleLogout}
+                variant="ghost" 
+                size="sm"
+                className="text-white hover:bg-white/20"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Déconnexion
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -223,7 +297,7 @@ export default function AdminPage() {
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-            <Card>
+            <Card className="border-t-4 border-t-blue-500">
               <CardContent className="pt-4">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -237,7 +311,7 @@ export default function AdminPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-t-4 border-t-purple-500">
               <CardContent className="pt-4">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -251,11 +325,11 @@ export default function AdminPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-t-4 border-t-cyan-500">
               <CardContent className="pt-4">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-gradient-to-r from-blue-100 to-green-100 rounded-lg flex items-center justify-center">
-                    <Wallet className="h-5 w-5 text-blue-600" />
+                  <div className="h-10 w-10 bg-cyan-100 rounded-lg flex items-center justify-center">
+                    <Wallet className="h-5 w-5 text-cyan-600" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{stats.premiumUsers}</p>
@@ -265,7 +339,7 @@ export default function AdminPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-t-4 border-t-green-500">
               <CardContent className="pt-4">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
@@ -279,7 +353,7 @@ export default function AdminPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-t-4 border-t-red-500">
               <CardContent className="pt-4">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 bg-red-100 rounded-lg flex items-center justify-center">
@@ -293,7 +367,7 @@ export default function AdminPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-t-4 border-t-yellow-500">
               <CardContent className="pt-4">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -341,6 +415,10 @@ export default function AdminPage() {
                 <option value="expired">Expiré</option>
                 <option value="pending">En attente</option>
               </select>
+              <Button onClick={fetchUsers} variant="outline">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Actualiser
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -349,9 +427,12 @@ export default function AdminPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
+              <UserCog className="h-5 w-5" />
               Utilisateurs ({filteredUsers.length})
             </CardTitle>
+            <CardDescription>
+              Gérez les comptes utilisateurs : éditer, activer/désactiver, supprimer
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -362,7 +443,7 @@ export default function AdminPage() {
                     u.isAdmin ? 'bg-purple-50 border-purple-200' : 'bg-white'
                   }`}
                 >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="font-semibold text-gray-900">{u.name}</h3>
@@ -391,29 +472,40 @@ export default function AdminPage() {
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap">
-                      {/* Envoyer rappel de paiement */}
-                      {u.subscriptionPlan !== 'legacy' && u.subscriptionStatus !== 'active' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => sendPaymentReminder(u.email, u.name)}
-                          className="text-blue-600 border-blue-200 hover:bg-blue-50"
-                        >
-                          <Mail className="h-4 w-4 mr-1" />
-                          Rappel
-                        </Button>
-                      )}
-
-                      {/* Activer/Désactiver */}
                       {!u.isAdmin && (
                         <>
+                          {/* Bouton Éditer */}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditModal(u)}
+                            className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Éditer
+                          </Button>
+
+                          {/* Envoyer rappel de paiement */}
+                          {u.subscriptionStatus !== 'active' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => sendPaymentReminder(u.email, u.name)}
+                              className="text-amber-600 border-amber-200 hover:bg-amber-50"
+                            >
+                              <Mail className="h-4 w-4 mr-1" />
+                              Rappel
+                            </Button>
+                          )}
+
+                          {/* Activer/Désactiver */}
                           {u.subscriptionStatus === 'active' ? (
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => handleAction(u.id, 'disable')}
                               disabled={actionLoading === u.id}
-                              className="text-red-600 border-red-200 hover:bg-red-50"
+                              className="text-orange-600 border-orange-200 hover:bg-orange-50"
                             >
                               <Ban className="h-4 w-4 mr-1" />
                               Désactiver
@@ -472,6 +564,84 @@ export default function AdminPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal d'édition */}
+      <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Edit className="h-5 w-5 text-blue-600" />
+              Modifier l&apos;utilisateur
+            </DialogTitle>
+            <DialogDescription>
+              Modifiez les informations du compte
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-name">Nom complet</Label>
+              <Input
+                id="edit-name"
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-email">Email</Label>
+              <Input
+                id="edit-email"
+                type="email"
+                value={editForm.email}
+                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-plan">Plan d&apos;abonnement</Label>
+              <select
+                id="edit-plan"
+                value={editForm.subscriptionPlan}
+                onChange={(e) => setEditForm({ ...editForm, subscriptionPlan: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg bg-white"
+              >
+                <option value="legacy">Legacy (Gratuit illimité)</option>
+                <option value="premium">Premium (3000 FCFA/mois)</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-status">Statut</Label>
+              <select
+                id="edit-status"
+                value={editForm.subscriptionStatus}
+                onChange={(e) => setEditForm({ ...editForm, subscriptionStatus: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg bg-white"
+              >
+                <option value="active">Actif</option>
+                <option value="pending">En attente de paiement</option>
+                <option value="expired">Expiré / Désactivé</option>
+              </select>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setEditModalOpen(false)}>
+              <X className="h-4 w-4 mr-1" />
+              Annuler
+            </Button>
+            <Button onClick={handleSaveEdit} disabled={editLoading}>
+              {editLoading ? (
+                <RefreshCw className="h-4 w-4 mr-1 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 mr-1" />
+              )}
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

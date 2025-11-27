@@ -90,7 +90,7 @@ export async function PATCH(
 
   try {
     const body = await request.json();
-    const { action, subscriptionStatus, subscriptionPlan, subscriptionEnd } = body;
+    const { action, name, email, subscriptionStatus, subscriptionPlan, subscriptionEnd } = body;
 
     const updateData: any = {};
 
@@ -107,7 +107,28 @@ export async function PATCH(
       updateData.subscriptionStatus = 'active';
     }
 
-    // Modifications directes
+    // Modifications directes des infos utilisateur
+    if (name) {
+      updateData.name = name;
+    }
+    if (email) {
+      // Vérifier que l'email n'est pas déjà utilisé par un autre utilisateur
+      const existingUser = await prisma.user.findFirst({
+        where: { 
+          email,
+          NOT: { id }
+        }
+      });
+      if (existingUser) {
+        return NextResponse.json(
+          { error: 'Cet email est déjà utilisé par un autre compte' },
+          { status: 400 }
+        );
+      }
+      updateData.email = email;
+    }
+    
+    // Modifications d'abonnement
     if (subscriptionStatus) {
       updateData.subscriptionStatus = subscriptionStatus;
     }

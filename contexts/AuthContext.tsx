@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; redirectTo?: string }> => {
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -49,13 +49,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
-        return true;
+        return { success: true, redirectTo: data.redirectTo || '/dashboard' };
       } else {
-        return false;
+        return { success: false };
       }
     } catch (error) {
       console.error('Erreur lors de la connexion:', error);
-      return false;
+      return { success: false };
     }
   };
 
@@ -73,8 +73,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         // Après l'inscription, connecter automatiquement l'utilisateur
-        const loginSuccess = await login(email, password);
-        return loginSuccess;
+        const loginResult = await login(email, password);
+        return loginResult.success;
       } else {
         const data = await response.json();
         console.error('Erreur d\'inscription:', data.error);

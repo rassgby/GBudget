@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = `baraaka-${CACHE_VERSION}`;
 const STATIC_CACHE = `baraaka-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `baraaka-dynamic-${CACHE_VERSION}`;
@@ -12,6 +12,8 @@ const STATIC_ASSETS = [
   '/history',
   '/login',
   '/register',
+  '/subscribe',
+  '/admin',
   '/manifest.json',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',

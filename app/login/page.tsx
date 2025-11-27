@@ -18,12 +18,15 @@ export default function LoginPage() {
 
   const { login, user } = useAuth();
   const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      router.push('/dashboard');
+    // Si l'utilisateur est déjà connecté et qu'on n'est pas en train de rediriger
+    if (user && !isRedirecting) {
+      // Rediriger vers admin si c'est un admin, sinon dashboard
+      router.push(user.isAdmin ? '/admin' : '/dashboard');
     }
-  }, [user, router]);
+  }, [user, router, isRedirecting]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,14 +38,17 @@ export default function LoginPage() {
     }
 
     setIsLoading(true);
+    setIsRedirecting(true);
 
-    const success = await login(email, password);
+    const result = await login(email, password);
 
-    if (success) {
-      router.push('/dashboard');
+    if (result.success) {
+      // Rediriger vers le dashboard admin si c'est un admin, sinon dashboard normal
+      router.push(result.redirectTo || '/dashboard');
     } else {
       setError('Email ou mot de passe incorrect');
       setIsLoading(false);
+      setIsRedirecting(false);
     }
   };
 

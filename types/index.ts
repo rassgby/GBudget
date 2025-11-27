@@ -80,9 +80,14 @@ export interface Budget {
   updatedAt: string;
 }
 
+export interface LoginResult {
+  success: boolean;
+  redirectTo?: string;
+}
+
 export interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<LoginResult>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;

@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       .setExpirationTime('7d')
       .sign(SECRET_KEY);
 
-    // Créer la réponse
+    // Créer la réponse avec les infos admin
     const response = NextResponse.json(
       {
         message: 'Connexion réussie',
@@ -58,7 +58,11 @@ export async function POST(request: NextRequest) {
           name: user.name,
           email: user.email,
           createdAt: user.createdAt,
+          isAdmin: user.isAdmin,
+          subscriptionPlan: user.subscriptionPlan,
+          subscriptionStatus: user.subscriptionStatus,
         },
+        redirectTo: user.isAdmin ? '/admin' : '/dashboard',
       },
       { status: 200 }
     );

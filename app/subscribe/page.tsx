@@ -66,7 +66,7 @@ function SubscribeContent() {
           email: formData.email,
           password: formData.password,
           subscriptionPlan: 'premium',
-          subscriptionStatus: 'active',
+          subscriptionStatus: 'pending', // En attente jusqu'au paiement
         }),
       });
 
@@ -76,11 +76,9 @@ function SubscribeContent() {
         throw new Error(data.error || "Erreur lors de l'inscription");
       }
 
+      // Compte créé, rediriger immédiatement vers Wave
       setAccountCreated(true);
-      
-      setTimeout(() => {
-        window.open(PAYMENT_LINK, '_blank');
-      }, 2000);
+      window.open(PAYMENT_LINK, '_blank');
 
     } catch (err: any) {
       setError(err.message);
@@ -93,41 +91,55 @@ function SubscribeContent() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 flex items-center justify-center">
         <Card className="max-w-md w-full">
-          <CardHeader className="text-center border-b">
+          <CardHeader className="text-center border-b bg-gradient-to-r from-blue-50 to-green-50">
             <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="h-8 w-8 text-green-600" />
             </div>
             <CardTitle className="text-2xl">Compte créé avec succès !</CardTitle>
-            <CardDescription>
-              Vous allez être redirigé vers la page de paiement Wave
+            <CardDescription className="text-base">
+              Une fenêtre de paiement Wave s&apos;est ouverte
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6 space-y-6">
-            <div className="p-4 bg-blue-50 rounded-xl text-center">
-              <p className="text-blue-800 font-semibold mb-2">Montant à payer</p>
-              <p className="text-3xl font-bold text-blue-600">3 000 FCFA</p>
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+              <div className="flex items-start gap-3">
+                <div className="h-8 w-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Crown className="h-4 w-4 text-amber-600" />
+                </div>
+                <div>
+                  <p className="font-semibold text-amber-800">Finalisez votre paiement</p>
+                  <p className="text-sm text-amber-700 mt-1">
+                    Effectuez le paiement de <strong>3 000 FCFA</strong> via Wave pour activer votre compte Premium.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-3">
               <a href={PAYMENT_LINK} target="_blank" rel="noopener noreferrer">
                 <Button className="w-full bg-[#1DC1EC] hover:bg-[#19aed6] text-white py-6 text-lg">
                   <Wallet className="h-5 w-5 mr-2" />
-                  Payer avec Wave
+                  Ouvrir Wave pour payer
                 </Button>
               </a>
-              
-              <p className="text-xs text-gray-500 text-center">
-                Après le paiement, connectez-vous pour accéder à votre compte
-              </p>
             </div>
 
-            <div className="pt-4 border-t text-center">
+            <div className="p-4 bg-gray-50 rounded-xl text-center">
+              <p className="text-gray-600 text-sm mb-3">
+                ✅ Paiement effectué ?
+              </p>
               <Link href="/login">
-                <Button variant="outline" className="w-full">
-                  Se connecter
+                <Button variant="default" className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600">
+                  Se connecter maintenant
+                  <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </Link>
             </div>
+
+            <p className="text-xs text-gray-500 text-center">
+              Votre compte sera activé dès réception du paiement.<br />
+              Contactez le support si vous rencontrez des difficultés.
+            </p>
           </CardContent>
         </Card>
       </div>

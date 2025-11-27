@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       email, 
       password,
       subscriptionPlan = 'premium',
-      subscriptionStatus = 'active'
+      subscriptionStatus = 'pending' // En attente du paiement par défaut
     } = body;
 
     // Validation
