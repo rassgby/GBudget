@@ -1,10 +1,71 @@
+
+export type SubscriptionPlan = 'legacy' | 'pro' | 'business' | 'enterprise';
+export type SubscriptionStatus = 'active' | 'expired' | 'pending';
+
 export interface User {
   id: string;
   name: string;
   email: string;
   password: string;
   createdAt: string;
+  subscriptionPlan: SubscriptionPlan;
+  subscriptionStatus: SubscriptionStatus;
+  subscriptionStart?: string;
+  subscriptionEnd?: string;
+  paymentReference?: string;
 }
+
+// Limites par plan d'abonnement
+export const PLAN_LIMITS = {
+  legacy: {
+    name: 'Legacy',
+    price: 0,
+    transactions: Infinity,
+    categories: Infinity,
+    budgets: Infinity,
+    exportPDF: true,
+    exportExcel: true,
+    multiAccounts: true,
+    apiAccess: true,
+    prioritySupport: true,
+  },
+  pro: {
+    name: 'Pro',
+    price: 2000,
+    transactions: Infinity,
+    categories: Infinity,
+    budgets: 10,
+    exportPDF: true,
+    exportExcel: true,
+    multiAccounts: false,
+    apiAccess: false,
+    prioritySupport: false,
+  },
+  business: {
+    name: 'Business',
+    price: 4000,
+    transactions: Infinity,
+    categories: Infinity,
+    budgets: Infinity,
+    exportPDF: true,
+    exportExcel: true,
+    multiAccounts: true,
+    apiAccess: false,
+    prioritySupport: true,
+  },
+  enterprise: {
+    name: 'Enterprise',
+    price: 7000,
+    transactions: Infinity,
+    categories: Infinity,
+    budgets: Infinity,
+    exportPDF: true,
+    exportExcel: true,
+    multiAccounts: true,
+    apiAccess: true,
+    prioritySupport: true,
+  },
+} as const;
 
 export interface Category {
   id: string;

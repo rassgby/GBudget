@@ -1,6 +1,7 @@
-const CACHE_NAME = 'baraaka-v1';
-const STATIC_CACHE = 'baraaka-static-v1';
-const DYNAMIC_CACHE = 'baraaka-dynamic-v1';
+const CACHE_VERSION = 'v2';
+const CACHE_NAME = `baraaka-${CACHE_VERSION}`;
+const STATIC_CACHE = `baraaka-static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `baraaka-dynamic-${CACHE_VERSION}`;
 
 // Ressources statiques à mettre en cache
 const STATIC_ASSETS = [
@@ -8,6 +9,7 @@ const STATIC_ASSETS = [
   '/dashboard',
   '/transactions',
   '/categories',
+  '/history',
   '/login',
   '/register',
   '/manifest.json',
@@ -17,32 +19,61 @@ const STATIC_ASSETS = [
 
 // Installation du Service Worker
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installation...');
+  console.log('[SW] Installation nouvelle version...');
   event.waitUntil(
     caches.open(STATIC_CACHE).then((cache) => {
       console.log('[SW] Mise en cache des ressources statiques');
       return cache.addAll(STATIC_ASSETS);
     })
   );
+  // Force l'activation immédiate de la nouvelle version
   self.skipWaiting();
 });
 
 // Activation et nettoyage des anciens caches
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activation...');
+  console.log('[SW] Activation nouvelle version...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter((name) => name !== STATIC_CACHE && name !== DYNAMIC_CACHE)
+          .filter((name) => {
+            // Supprimer tous les caches qui ne correspondent pas à la version actuelle
+            return name.startsWith('baraaka-') && 
+                   name !== STATIC_CACHE && 
+                   name !== DYNAMIC_CACHE;
+          })
           .map((name) => {
             console.log('[SW] Suppression ancien cache:', name);
             return caches.delete(name);
           })
       );
+    }).then(() => {
+      // Notifier tous les clients de la mise à jour
+      return self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({
+            type: 'SW_UPDATED',
+            version: CACHE_VERSION
+          });
+        });
+      });
     })
   );
+  // Prendre le contrôle immédiatement
   self.clients.claim();
+});
+
+// Écouter les messages du client
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('[SW] Skip waiting demandé par le client');
+    self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.ports[0].postMessage({ version: CACHE_VERSION });
+  }
 });
 
 // Stratégie de cache : Network First avec fallback sur le cache

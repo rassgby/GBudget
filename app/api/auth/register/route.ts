@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { SubscriptionPlan, SubscriptionStatus } from '@/types';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, password } = body;
+    const { 
+      name, 
+      email, 
+      password,
+      subscriptionPlan = 'pro',
+      subscriptionStatus = 'pending'
+    } = body;
 
     // Validation
     if (!name || !email || !password) {
@@ -18,6 +25,15 @@ export async function POST(request: NextRequest) {
     if (password.length < 6) {
       return NextResponse.json(
         { error: 'Le mot de passe doit contenir au moins 6 caractères' },
+        { status: 400 }
+      );
+    }
+
+    // Valider le plan d'abonnement
+    const validPlans: SubscriptionPlan[] = ['pro', 'business', 'enterprise'];
+    if (!validPlans.includes(subscriptionPlan)) {
+      return NextResponse.json(
+        { error: 'Plan d\'abonnement invalide' },
         { status: 400 }
       );
     }
@@ -37,20 +53,33 @@ export async function POST(request: NextRequest) {
     // Hasher le mot de passe
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Créer l'utilisateur
+    // Calculer la date de fin d'abonnement (1 mois)
+    const subscriptionStart = new Date();
+    const subscriptionEnd = new Date();
+    subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1);
+
+    // Créer l'utilisateur avec l'abonnement
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
+        subscriptionPlan,
+        subscriptionStatus,
+        subscriptionStart,
+        subscriptionEnd,
       },
     });
+
+    // Retourner les informations sans le mot de passe
+    const userResponse = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+      subscriptionPlan: user.subscriptionPlan,
+      subscriptionStatus: user.subscriptionStatus,
+    };
 
     // Créer les catégories par défaut
     const defaultCategories = [

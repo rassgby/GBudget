@@ -3,6 +3,8 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import { UpdateNotification } from "@/components/UpdateNotification";
+import { SubscriptionAlert } from "@/components/SubscriptionAlert";
 
 export const metadata: Metadata = {
   title: "Baraaka - Gestion de Budget Personnel",
@@ -57,27 +59,11 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <Header />
+          <SubscriptionAlert />
           <main>{children}</main>
           <PWAInstallPrompt />
+          <UpdateNotification />
         </AuthProvider>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').then(
-                    function(registration) {
-                      console.log('SW enregistré:', registration.scope);
-                    },
-                    function(err) {
-                      console.log('SW erreur:', err);
-                    }
-                  );
-                });
-              }
-            `,
-          }}
-        />
       </body>
     </html>
   );

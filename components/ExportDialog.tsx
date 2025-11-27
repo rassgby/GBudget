@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { FileDown, FileText, FileSpreadsheet } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { FileDown, FileText, FileSpreadsheet, Calendar, CalendarDays, CalendarRange, ListFilter } from 'lucide-react';
 import { Transaction, Category } from '@/types';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -22,6 +22,8 @@ import {
   generateFileName
 } from '@/lib/export';
 
+type ExportPreset = 'all' | 'month' | 'week' | 'custom';
+
 interface ExportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -35,17 +37,63 @@ export function ExportDialog({
   transactions,
   categories
 }: ExportDialogProps) {
+  const [preset, setPreset] = useState<ExportPreset>('all');
   const [filters, setFilters] = useState<ExportFilters>({
     type: 'all'
   });
-
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
+  // Calculer les dates pour les presets
+  const presetDates = useMemo(() => {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Lundi
+    
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    
+    return {
+      week: {
+        startDate: startOfWeek.toISOString().split('T')[0],
+        endDate: today.toISOString().split('T')[0]
+      },
+      month: {
+        startDate: startOfMonth.toISOString().split('T')[0],
+        endDate: today.toISOString().split('T')[0]
+      }
+    };
+  }, []);
+
+  // Appliquer les filtres selon le preset
+  const activeFilters = useMemo(() => {
+    let dateFilters: { startDate?: string; endDate?: string } = {};
+    
+    switch (preset) {
+      case 'week':
+        dateFilters = presetDates.week;
+        break;
+      case 'month':
+        dateFilters = presetDates.month;
+        break;
+      case 'custom':
+        dateFilters = {
+          startDate: filters.startDate,
+          endDate: filters.endDate
+        };
+        break;
+      default:
+        // 'all' - pas de filtre de date
+        break;
+    }
+
+    return {
+      ...filters,
+      ...dateFilters,
+      categoryIds: selectedCategories
+    };
+  }, [preset, filters, selectedCategories, presetDates]);
+
   // Filtrer les transactions en temps réel
-  const filteredTransactions = filterTransactions(
-    transactions,
-    { ...filters, categoryIds: selectedCategories }
-  );
+  const filteredTransactions = filterTransactions(transactions, activeFilters);
 
   const handleCategoryToggle = (categoryId: string) => {
     setSelectedCategories(prev =>
@@ -56,23 +104,18 @@ export function ExportDialog({
   };
 
   const handleExport = (format: 'pdf' | 'excel') => {
-    const exportFilters: ExportFilters = {
-      ...filters,
-      categoryIds: selectedCategories
-    };
-
     if (format === 'pdf') {
       exportToPDF(
         filteredTransactions,
         categories,
-        exportFilters,
+        activeFilters,
         generateFileName('transactions', 'pdf')
       );
     } else {
       exportToExcel(
         filteredTransactions,
         categories,
-        exportFilters,
+        activeFilters,
         generateFileName('transactions', 'xlsx')
       );
     }
@@ -81,6 +124,7 @@ export function ExportDialog({
   };
 
   const resetFilters = () => {
+    setPreset('all');
     setFilters({ type: 'all' });
     setSelectedCategories([]);
   };
@@ -98,31 +142,76 @@ export function ExportDialog({
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Filtres de date */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="startDate">Date de début</Label>
-              <Input
-                id="startDate"
-                type="date"
-                value={filters.startDate || ''}
-                onChange={(e) =>
-                  setFilters({ ...filters, startDate: e.target.value || undefined })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="endDate">Date de fin</Label>
-              <Input
-                id="endDate"
-                type="date"
-                value={filters.endDate || ''}
-                onChange={(e) =>
-                  setFilters({ ...filters, endDate: e.target.value || undefined })
-                }
-              />
+          {/* Options d'export rapides */}
+          <div className="space-y-2">
+            <Label>Période d'export</Label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <Button
+                type="button"
+                variant={preset === 'all' ? 'default' : 'outline'}
+                onClick={() => setPreset('all')}
+                className="flex items-center gap-2"
+              >
+                <CalendarRange className="h-4 w-4" />
+                Tout
+              </Button>
+              <Button
+                type="button"
+                variant={preset === 'month' ? 'default' : 'outline'}
+                onClick={() => setPreset('month')}
+                className="flex items-center gap-2"
+              >
+                <CalendarDays className="h-4 w-4" />
+                Ce mois
+              </Button>
+              <Button
+                type="button"
+                variant={preset === 'week' ? 'default' : 'outline'}
+                onClick={() => setPreset('week')}
+                className="flex items-center gap-2"
+              >
+                <Calendar className="h-4 w-4" />
+                Cette semaine
+              </Button>
+              <Button
+                type="button"
+                variant={preset === 'custom' ? 'default' : 'outline'}
+                onClick={() => setPreset('custom')}
+                className="flex items-center gap-2"
+              >
+                <ListFilter className="h-4 w-4" />
+                Personnalisé
+              </Button>
             </div>
           </div>
+
+          {/* Filtres de date personnalisés - uniquement si preset = custom */}
+          {preset === 'custom' && (
+            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="space-y-2">
+                <Label htmlFor="startDate">Date de début</Label>
+                <Input
+                  id="startDate"
+                  type="date"
+                  value={filters.startDate || ''}
+                  onChange={(e) =>
+                    setFilters({ ...filters, startDate: e.target.value || undefined })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="endDate">Date de fin</Label>
+                <Input
+                  id="endDate"
+                  type="date"
+                  value={filters.endDate || ''}
+                  onChange={(e) =>
+                    setFilters({ ...filters, endDate: e.target.value || undefined })
+                  }
+                />
+              </div>
+            </div>
+          )}
 
           {/* Filtre de type */}
           <div className="space-y-2">

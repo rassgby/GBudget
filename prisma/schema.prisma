@@ -18,6 +18,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Abonnement
+  subscriptionPlan   String   @default("legacy") // 'legacy', 'pro', 'business', 'enterprise'
+  subscriptionStatus String   @default("active") // 'active', 'expired', 'pending'
+  subscriptionStart  DateTime?
+  subscriptionEnd    DateTime?
+  paymentReference   String?  // Référence de paiement Wave
+
   transactions Transaction[]
   categories   Category[]
   budgets      Budget[]

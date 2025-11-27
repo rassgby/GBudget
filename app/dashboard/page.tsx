@@ -8,7 +8,6 @@ import { statisticsAPI, categoriesAPI, budgetsAPI } from '@/lib/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { StatisticsResponse, Category, Budget } from '@/types';
 import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, ArrowLeftRight, Plus, Target, AlertTriangle, CreditCard, Eye, EyeOff } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ExportButton } from '@/components/ExportDialog';
@@ -60,38 +59,7 @@ export default function DashboardPage() {
     );
   }
 
-  const { summary, topCategories, expensesByCategory, monthlyTrend, recentTransactions, budgetStatus } = statistics;
-
-  // Préparer les données pour le graphique en camembert
-  const pieChartData = expensesByCategory.map(item => {
-    const category = categories.find(c => c.name === item.category);
-    return {
-      name: item.category,
-      value: item.amount,
-      color: category?.color || '#6B7280',
-    };
-  }).filter(item => item.value > 0);
-
-  // Préparer les données pour le graphique en barres
-  const barChartData = monthlyTrend.map(item => ({
-    month: item.month.charAt(0).toUpperCase() + item.month.slice(1),
-    revenus: item.income,
-    dépenses: item.expenses,
-  }));
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-2 sm:p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-semibold text-xs sm:text-sm text-gray-900">{payload[0].payload.name}</p>
-          <p className="text-xs sm:text-sm text-gray-600">
-            {formatCurrency(payload[0].value)}
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
+  const { summary, topCategories, recentTransactions, budgetStatus } = statistics;
 
   return (
     <AuthGuard>
@@ -366,65 +334,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Graphiques (version simplifiée) */}
-          <div className="grid gap-4 lg:grid-cols-2 mt-6 sm:mt-8">
-            {/* Dépenses par catégorie */}
-            <Card className="bg-white border-0 shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold text-gray-900">
-                  Dépenses par catégorie
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {pieChartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={220}>
-                    <PieChart>
-                      <Pie
-                        data={pieChartData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={70}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {pieChartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ fontSize: '12px' }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="h-[220px] flex items-center justify-center text-sm text-gray-500">
-                    Aucune dépense
-                  </div>
-                )}
-              </CardContent>
-            </Card>
 
-            {/* Évolution mensuelle */}
-            <Card className="bg-white border-0 shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold text-gray-900">
-                  Évolution mensuelle
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={barChartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                    <YAxis tick={{ fontSize: 11 }} />
-                    <Tooltip />
-                    <Legend wrapperStyle={{ fontSize: '12px' }} />
-                    <Bar dataKey="revenus" fill="#10b981" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="dépenses" fill="#ef4444" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </div>
 
